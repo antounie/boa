@@ -16,11 +16,6 @@ class VerificarRol
             return redirect()->route('login');
         }
 
-        // El administrador (rol_id = 1) siempre tiene acceso
-        if ($usuario->rol_id === 1) {
-            return $next($request);
-        }
-
         // Verificar si el rol tiene acceso a alguna de las tablas requeridas
         foreach ($tablas as $tabla) {
             $tieneAcceso = RolPermiso::where('rol_id', $usuario->rol_id)

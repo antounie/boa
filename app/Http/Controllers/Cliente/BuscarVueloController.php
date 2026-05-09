@@ -53,6 +53,8 @@ class BuscarVueloController extends Controller
 
     public function seleccionarAsiento(ProgramacionVuelo $programacion)
     {
+        session()->forget('vuelo_pendiente');
+
         $programacion->load(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave']);
 
         $asientos = AsientoProgramacion::with(['asiento.tipoClase'])

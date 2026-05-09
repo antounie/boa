@@ -1,160 +1,462 @@
-/* ===== TEMA ADULTOS (Default) ===== */
+/* =============================================================
+   BOLIVIANA DE AVIACIÓN — SISTEMA DE TEMAS
+   Organizado por: variables → modo noche → base → componentes
+   ============================================================= */
+
+/* =============================================================
+   SECCIÓN 1: VARIABLES DE TEMA
+   ============================================================= */
+
+/* ADULTOS — Azul corporativo profesional */
 [data-tema="adultos"] {
-    --nav-bg: #0d6efd;
-    --nav-hover: #0b5ed7;
-    --body-bg: #f0f2f5;
-    --card-bg: #ffffff;
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --footer-bg: #212529;
-    --footer-text: #ffffff;
-    --btn-primary: #0d6efd;
-    --btn-primary-hover: #0b5ed7;
-    --table-header: #212529;
-    --card-header-bg: #0d6efd;
-    --card-header-text: #ffffff;
-    --border-color: #dee2e6;
-    --alert-bg: #f8f9fa;
+    --nav-bg:            linear-gradient(135deg, #0a1628 0%, #1a3a5c 100%);
+    --nav-link:          rgba(255,255,255,0.85);
+    --nav-link-hover:    #ffffff;
+    --body-bg:           #f4f6f9;
+    --card-bg:           #ffffff;
+    --card-radius:       10px;
+    --card-shadow:       0 2px 8px rgba(0,0,0,0.08);
+    --card-border:       1px solid #e2e8f0;
+    --card-header-bg:    linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
+    --card-header-text:  #ffffff;
+    --text-primary:      #212529;
+    --text-secondary:    #6c757d;
+    --footer-bg:         #0a1628;
+    --footer-text:       #a0aec0;
+    --footer-link:       #63b3ed;
+    --btn-primary-bg:    #1a5276;
+    --btn-primary-hover: #154360;
+    --btn-primary-text:  #ffffff;
+    --btn-radius:        6px;
+    --table-header-bg:   #1a3a5c;
+    --table-header-text: #ffffff;
+    --table-stripe:      #f8fafc;
+    --table-hover:       #eef2f7;
+    --input-bg:          #ffffff;
+    --input-border:      #ced4da;
+    --input-focus:       #1a5276;
+    --input-radius:      8px;
+    --dropdown-bg:       #ffffff;
+    --dropdown-hover:    #e8f0fe;
+    --dropdown-text:     #212529;
+    --dropdown-radius:   8px;
+    --border-color:      #dee2e6;
+    --badge-primary-bg:  #1a5276;
+    --accent:            #2980b9;
+    --link-color:        #1a5276;
+    --link-hover:        #0d2b45;
 }
 
-/* ===== TEMA NIÑOS ===== */
+/* NIÑOS — Naranja vibrante y divertido */
 [data-tema="ninos"] {
-    --nav-bg: #FF6B6B;
-    --nav-hover: #ee5a5a;
-    --body-bg: #FFF5E4;
-    --card-bg: #ffffff;
-    --text-primary: #2D3436;
-    --text-secondary: #636e72;
-    --footer-bg: #FF6B6B;
-    --footer-text: #ffffff;
-    --btn-primary: #FF6B6B;
-    --btn-primary-hover: #ee5a5a;
-    --table-header: #FF6B6B;
-    --card-header-bg: #FF6B6B;
-    --card-header-text: #ffffff;
-    --border-color: #ffd3d3;
-    --alert-bg: #fff0f0;
+    --nav-bg:            linear-gradient(135deg, #E65100 0%, #FF8F00 100%);
+    --nav-link:          rgba(255,255,255,0.92);
+    --nav-link-hover:    #ffffff;
+    --body-bg:           #FFFDE7;
+    --card-bg:           #ffffff;
+    --card-radius:       20px;
+    --card-shadow:       0 4px 14px rgba(230,81,0,0.12);
+    --card-border:       2px solid #FFE082;
+    --card-header-bg:    linear-gradient(135deg, #FF7043 0%, #FFA726 100%);
+    --card-header-text:  #ffffff;
+    --text-primary:      #3E2723;
+    --text-secondary:    #6D4C41;
+    --footer-bg:         #E65100;
+    --footer-text:       #FFF8E1;
+    --footer-link:       #FFE0B2;
+    --btn-primary-bg:    #FF7043;
+    --btn-primary-hover: #E64A19;
+    --btn-primary-text:  #ffffff;
+    --btn-radius:        25px;
+    --table-header-bg:   #FF7043;
+    --table-header-text: #ffffff;
+    --table-stripe:      #FFF8E1;
+    --table-hover:       #FFE0B2;
+    --input-bg:          #ffffff;
+    --input-border:      #FFCC80;
+    --input-focus:       #FF7043;
+    --input-radius:      16px;
+    --dropdown-bg:       #ffffff;
+    --dropdown-hover:    #FFF3E0;
+    --dropdown-text:     #3E2723;
+    --dropdown-radius:   14px;
+    --border-color:      #FFE082;
+    --badge-primary-bg:  #FF7043;
+    --accent:            #FFA726;
+    --link-color:        #E65100;
+    --link-hover:        #BF360C;
 }
 
-[data-tema="ninos"] .navbar-brand::before {
-    content: "🛫 ";
-}
-
-[data-tema="ninos"] footer::before {
-    content: "✈️ ";
-}
-
-[data-tema="ninos"] .card {
-    border-radius: 15px;
-    border: 2px solid var(--border-color);
-}
-
-[data-tema="ninos"] .btn {
-    border-radius: 20px;
-}
-
-[data-tema="ninos"] h2 {
-    color: #FF6B6B;
-}
-
-/* ===== TEMA JÓVENES ===== */
+/* JÓVENES — Verde azulado moderno y fresco */
 [data-tema="jovenes"] {
-    --nav-bg: #6C5CE7;
-    --nav-hover: #5b4ccc;
-    --body-bg: #F8F9FD;
-    --card-bg: #ffffff;
-    --text-primary: #2D3436;
-    --text-secondary: #636e72;
-    --footer-bg: #2D3436;
-    --footer-text: #a8e6cf;
-    --btn-primary: #6C5CE7;
-    --btn-primary-hover: #5b4ccc;
-    --table-header: #2D3436;
-    --card-header-bg: #6C5CE7;
-    --card-header-text: #ffffff;
-    --border-color: #ddd6fe;
-    --alert-bg: #f3f0ff;
+    --nav-bg:            linear-gradient(135deg, #00695C 0%, #26A69A 100%);
+    --nav-link:          rgba(255,255,255,0.9);
+    --nav-link-hover:    #ffffff;
+    --body-bg:           #E8F5F3;
+    --card-bg:           #ffffff;
+    --card-radius:       12px;
+    --card-shadow:       0 4px 15px rgba(0,105,92,0.10);
+    --card-border:       1px solid #B2DFDB;
+    --card-header-bg:    linear-gradient(135deg, #00897B 0%, #26A69A 100%);
+    --card-header-text:  #ffffff;
+    --text-primary:      #1B5E20;
+    --text-primary:      #1a3330;
+    --text-secondary:    #4E7B76;
+    --footer-bg:         #004D40;
+    --footer-text:       #B2DFDB;
+    --footer-link:       #80CBC4;
+    --btn-primary-bg:    #00897B;
+    --btn-primary-hover: #00695C;
+    --btn-primary-text:  #ffffff;
+    --btn-radius:        8px;
+    --table-header-bg:   #00695C;
+    --table-header-text: #E0F2F1;
+    --table-stripe:      #F0FDFA;
+    --table-hover:       #CCEFE9;
+    --input-bg:          #ffffff;
+    --input-border:      #B2DFDB;
+    --input-focus:       #00897B;
+    --input-radius:      8px;
+    --dropdown-bg:       #ffffff;
+    --dropdown-hover:    #E0F2F1;
+    --dropdown-text:     #004D40;
+    --dropdown-radius:   10px;
+    --border-color:      #B2DFDB;
+    --badge-primary-bg:  #00897B;
+    --accent:            #26A69A;
+    --link-color:        #00897B;
+    --link-hover:        #004D40;
 }
 
-[data-tema="jovenes"] .card {
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.1);
-}
+/* =============================================================
+   SECCIÓN 2: MODO NOCHE — SOBREESCRITURA DE VARIABLES
+   ============================================================= */
 
-[data-tema="jovenes"] .btn-primary {
-    background: linear-gradient(135deg, #6C5CE7, #a29bfe);
-    border: none;
-}
-
-[data-tema="jovenes"] .btn-primary:hover {
-    background: linear-gradient(135deg, #5b4ccc, #6C5CE7);
-}
-
-[data-tema="jovenes"] h2 {
-    color: #6C5CE7;
-}
-
-/* ===== MODO NOCHE ===== */
 [data-modo="noche"] {
-    --body-bg: #1a1a2e;
-    --card-bg: #16213e;
-    --text-primary: #e0e0e0;
+    --body-bg:        #2d2d3d;
+    --card-bg:        #363649;
+    --border-color:   #4a4a5e;
+    --text-primary:   #e0e0e0;
     --text-secondary: #a0a0a0;
-    --border-color: #2a2a4a;
-    --alert-bg: #1f2940;
+    --footer-bg:      #1e1e2e;
+    --input-bg:       #2a2a3e;
+    --input-border:   #4a4a5e;
+    --dropdown-bg:    #363649;
+    --dropdown-hover: #4a4a62;
+    --dropdown-text:  #e0e0e0;
+    --table-stripe:   #3a3a50;
+    --table-hover:    #424258;
 }
 
-[data-modo="noche"] body {
+/* Navbar más oscuro en modo noche por tema */
+[data-modo="noche"][data-tema="adultos"] {
+    --nav-bg: linear-gradient(135deg, #060c18 0%, #0d2035 100%);
+}
+[data-modo="noche"][data-tema="ninos"] {
+    --nav-bg: linear-gradient(135deg, #BF360C 0%, #E65100 100%);
+}
+[data-modo="noche"][data-tema="jovenes"] {
+    --nav-bg: linear-gradient(135deg, #00251A 0%, #00695C 100%);
+}
+
+/* =============================================================
+   SECCIÓN 3: ESTILOS BASE
+   ============================================================= */
+
+*, *::before, *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+body {
     background-color: var(--body-bg);
     color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-[data-modo="noche"] .card {
+a {
+    color: var(--link-color);
+}
+a:hover {
+    color: var(--link-hover);
+}
+
+/* Navbar */
+.navbar {
+    background: var(--nav-bg) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
+.navbar .navbar-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.3px;
+}
+
+.navbar .nav-link {
+    color: var(--nav-link) !important;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: var(--nav-link-hover) !important;
+    background-color: rgba(255,255,255,0.12);
+}
+
+.navbar .dropdown-toggle::after {
+    margin-left: 4px;
+}
+
+/* Cards */
+.card {
     background-color: var(--card-bg);
-    border-color: var(--border-color);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+
+.card-header {
+    background: var(--card-header-bg) !important;
+    color: var(--card-header-text) !important;
+    border-bottom: none;
+    padding: 0.85rem 1.25rem;
+    font-weight: 600;
+}
+
+.card-header * {
+    color: var(--card-header-text) !important;
+}
+
+.card-body {
     color: var(--text-primary);
 }
 
-[data-modo="noche"] .card-body {
-    color: var(--text-primary);
+/* Footer */
+footer {
+    background-color: var(--footer-bg) !important;
+    color: var(--footer-text) !important;
 }
 
-[data-modo="noche"] .table {
-    color: var(--text-primary);
+footer a {
+    color: var(--footer-link) !important;
 }
 
-[data-modo="noche"] .table-hover tbody tr:hover {
-    background-color: #1f2940;
+footer a:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
 }
 
-[data-modo="noche"] .form-control,
-[data-modo="noche"] .form-select {
-    background-color: #1f2940;
-    border-color: var(--border-color);
-    color: var(--text-primary);
+.footer-visits {
+    color: var(--footer-text);
+    opacity: 0.7;
 }
 
-[data-modo="noche"] .form-control:focus,
-[data-modo="noche"] .form-select:focus {
-    background-color: #253255;
-    color: var(--text-primary);
-}
-
-[data-modo="noche"] .text-muted {
+.text-muted {
     color: var(--text-secondary) !important;
 }
 
-[data-modo="noche"] .dropdown-menu {
-    background-color: var(--card-bg);
-    border-color: var(--border-color);
+/* =============================================================
+   SECCIÓN 4: BOTONES
+   ============================================================= */
+
+.btn-primary {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+    border-radius: var(--btn-radius) !important;
+    font-weight: 500;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 
-[data-modo="noche"] .dropdown-item {
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--btn-primary-hover) !important;
+    border-color: var(--btn-primary-hover) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn {
+    border-radius: var(--btn-radius) !important;
+}
+
+.btn-outline-primary {
+    color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    border-radius: var(--btn-radius) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+}
+
+/* Jóvenes: botón primario con gradiente */
+[data-tema="jovenes"] .btn-primary {
+    background: linear-gradient(135deg, #00897B, #26A69A) !important;
+    border: none !important;
+}
+
+[data-tema="jovenes"] .btn-primary:hover {
+    background: linear-gradient(135deg, #00695C, #00897B) !important;
+}
+
+/* =============================================================
+   SECCIÓN 5: TABLAS
+   ============================================================= */
+
+.table {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    --bs-table-border-color: var(--border-color);
+}
+
+.table thead th,
+.table > thead > tr > th {
+    background-color: var(--table-header-bg) !important;
+    color: var(--table-header-text) !important;
+    border-color: transparent !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.85rem 1rem;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--table-stripe);
     color: var(--text-primary);
 }
 
-[data-modo="noche"] .dropdown-item:hover {
-    background-color: #1f2940;
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--table-hover);
+    color: var(--text-primary);
+}
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* =============================================================
+   SECCIÓN 6: FORMULARIOS
+   ============================================================= */
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+    border-radius: var(--input-radius);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    border-color: var(--input-focus);
+    color: var(--text-primary);
+}
+
+[data-tema="adultos"] .form-control:focus,
+[data-tema="adultos"] .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(26,82,118,0.18);
+}
+
+[data-tema="ninos"] .form-control:focus,
+[data-tema="ninos"] .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(255,112,67,0.22);
+}
+
+[data-tema="jovenes"] .form-control:focus,
+[data-tema="jovenes"] .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(0,137,123,0.2);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+}
+
+.input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-secondary);
+    border-radius: var(--input-radius);
+}
+
+/* =============================================================
+   SECCIÓN 7: DROPDOWNS
+   ============================================================= */
+
+.dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--dropdown-radius);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 0.35rem;
+}
+
+.dropdown-item {
+    color: var(--dropdown-text);
+    border-radius: calc(var(--dropdown-radius) - 4px);
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    transition: background-color 0.15s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--dropdown-hover);
+    color: var(--dropdown-text);
+}
+
+.dropdown-item.active {
+    background-color: var(--btn-primary-bg);
+    color: #ffffff;
+}
+
+.dropdown-divider {
+    border-color: var(--border-color);
+    margin: 0.35rem 0;
+}
+
+.dropdown-header {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 0.5rem 0.9rem 0.25rem;
+}
+
+/* Navbar dropdowns */
+.navbar .dropdown-menu {
+    border-top: 3px solid var(--accent);
+    margin-top: 4px;
+}
+
+/* =============================================================
+   SECCIÓN 8: ALERTAS
+   ============================================================= */
+
+.alert {
+    border-radius: var(--card-radius);
+    border-width: 1px;
+    font-size: 0.9rem;
 }
 
 [data-modo="noche"] .alert-success {
@@ -181,45 +483,70 @@
     color: #d0d0a0;
 }
 
-[data-modo="noche"] .modal-content {
-    background-color: var(--card-bg);
-    color: var(--text-primary);
+/* =============================================================
+   SECCIÓN 9: PAGINACIÓN
+   ============================================================= */
+
+.pagination {
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 0;
 }
 
-[data-modo="noche"] .input-group-text {
-    background-color: #1f2940;
+.pagination .page-link {
+    padding: 6px 14px;
+    font-size: 0.875rem;
+    border-radius: var(--btn-radius) !important;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--link-color);
+    transition: all 0.2s;
+}
+
+.pagination .page-link:hover {
+    background-color: var(--dropdown-hover);
+    border-color: var(--accent);
+    color: var(--link-hover);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: #ffffff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--text-secondary);
+    background-color: var(--table-stripe);
     border-color: var(--border-color);
-    color: var(--text-primary);
 }
 
-/* ===== APLICAR VARIABLES CSS ===== */
-body {
-    background-color: var(--body-bg);
-    color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+/* Jóvenes: paginación activa con gradiente */
+[data-tema="jovenes"] .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #00897B, #26A69A);
+    border-color: #00897B;
 }
 
-.navbar {
-    background-color: var(--nav-bg) !important;
-    transition: background-color 0.3s ease;
+/* =============================================================
+   SECCIÓN 10: BADGES
+   ============================================================= */
+
+.badge.bg-primary,
+.badge.text-bg-primary {
+    background-color: var(--badge-primary-bg) !important;
 }
 
-.card {
-    background-color: var(--card-bg);
-    transition: background-color 0.3s ease;
+.badge {
+    border-radius: calc(var(--btn-radius) * 0.8);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.2px;
 }
 
-footer {
-    background-color: var(--footer-bg) !important;
-    color: var(--footer-text) !important;
-    transition: background-color 0.3s ease;
-}
+/* =============================================================
+   SECCIÓN 11: SELECTOR DE TEMA
+   ============================================================= */
 
-.bg-primary {
-    background-color: var(--card-header-bg) !important;
-}
-
-/* ===== SELECTOR DE TEMA ===== */
 .tema-selector {
     display: flex;
     align-items: center;
@@ -227,83 +554,675 @@ footer {
 }
 
 .tema-btn {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid rgba(255,255,255,0.6);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+    position: relative;
 }
 
 .tema-btn:hover {
-    transform: scale(1.2);
+    transform: scale(1.25);
+    border-color: #ffffff;
 }
 
 .tema-btn.active {
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.5);
+    transform: scale(1.15);
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.4), 0 0 8px rgba(255,255,255,0.3);
 }
 
-.tema-adultos { background: #0d6efd; }
-.tema-ninos { background: #FF6B6B; }
-.tema-jovenes { background: #6C5CE7; }
+.tema-adultos { background: linear-gradient(135deg, #1a5276, #2980b9); }
+.tema-ninos   { background: linear-gradient(135deg, #E65100, #FFA726); }
+.tema-jovenes { background: linear-gradient(135deg, #00695C, #26A69A); }
 
 .modo-toggle {
     cursor: pointer;
-    font-size: 1.2rem;
-    color: white;
-    transition: transform 0.3s;
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.9);
+    transition: transform 0.3s ease, color 0.2s;
+    display: flex;
+    align-items: center;
 }
 
 .modo-toggle:hover {
-    transform: scale(1.2);
+    transform: scale(1.2) rotate(15deg);
+    color: #ffffff;
 }
 
-/* ===== PAGINACIÓN ===== */
-.pagination {
+/* =============================================================
+   SECCIÓN 12: MODO NOCHE — COMPONENTES
+   ============================================================= */
+
+[data-modo="noche"] body {
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] .card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .card-body,
+[data-modo="noche"] .card-footer {
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] .table {
+    color: var(--text-primary);
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+}
+
+[data-modo="noche"] .table > tbody > tr > td {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .table thead th {
+    border-color: transparent !important;
+}
+
+[data-modo="noche"] .form-control,
+[data-modo="noche"] .form-select {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] .form-control::placeholder {
+    color: var(--text-secondary);
+}
+
+[data-modo="noche"] .form-control:focus,
+[data-modo="noche"] .form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+[data-modo="noche"] .input-group-text {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--text-secondary);
+}
+
+[data-modo="noche"] .dropdown-menu {
+    background-color: var(--dropdown-bg);
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .dropdown-item {
+    color: var(--dropdown-text);
+}
+
+[data-modo="noche"] .dropdown-item:hover,
+[data-modo="noche"] .dropdown-item:focus {
+    background-color: var(--dropdown-hover);
+    color: var(--dropdown-text);
+}
+
+[data-modo="noche"] .dropdown-divider {
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .dropdown-header {
+    color: var(--text-secondary);
+}
+
+[data-modo="noche"] .modal-content {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .modal-header,
+[data-modo="noche"] .modal-footer {
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] .nav-tabs {
+    border-color: var(--border-color);
+}
+
+[data-modo="noche"] .nav-tabs .nav-link {
+    color: var(--text-secondary);
+}
+
+[data-modo="noche"] .nav-tabs .nav-link.active {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] hr {
+    border-color: var(--border-color);
+    opacity: 0.5;
+}
+
+[data-modo="noche"] .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-modo="noche"] .bg-white,
+[data-modo="noche"] .bg-light {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary);
+}
+
+[data-modo="noche"] .border,
+[data-modo="noche"] .border-top,
+[data-modo="noche"] .border-bottom,
+[data-modo="noche"] .border-start,
+[data-modo="noche"] .border-end {
+    border-color: var(--border-color) !important;
+}
+
+/* =============================================================
+   SECCIÓN 13: EXTRAS POR TEMA
+   ============================================================= */
+
+/* Adultos: estilo corporativo limpio */
+[data-tema="adultos"] .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
+
+[data-tema="adultos"] h1,
+[data-tema="adultos"] h2,
+[data-tema="adultos"] h3 {
+    color: #1a3a5c;
+}
+
+[data-tema="adultos"] .bg-primary {
+    background: var(--card-header-bg) !important;
+}
+
+/* Niños: bordes redondeados y colores cálidos */
+[data-tema="ninos"] .card {
+    border: var(--card-border);
+}
+
+[data-tema="ninos"] h1,
+[data-tema="ninos"] h2,
+[data-tema="ninos"] h3 {
+    color: #E65100;
+    font-weight: 700;
+}
+
+[data-tema="ninos"] .bg-primary {
+    background: linear-gradient(135deg, #FF7043, #FFA726) !important;
+}
+
+[data-tema="ninos"] .btn-secondary {
+    border-radius: 25px !important;
+}
+
+[data-tema="ninos"] .badge {
+    border-radius: 14px;
+}
+
+[data-tema="ninos"] .card:hover {
+    box-shadow: 0 6px 20px rgba(230,81,0,0.18);
+    transform: translateY(-2px);
+}
+
+/* Jóvenes: estilo moderno con acentos teal */
+[data-tema="jovenes"] .card:hover {
+    box-shadow: 0 8px 25px rgba(0,105,92,0.18);
+    transform: translateY(-2px);
+}
+
+[data-tema="jovenes"] h1,
+[data-tema="jovenes"] h2,
+[data-tema="jovenes"] h3 {
+    color: #00695C;
+}
+
+[data-tema="jovenes"] .bg-primary {
+    background: linear-gradient(135deg, #00897B, #26A69A) !important;
+}
+
+[data-tema="jovenes"] .badge.bg-primary {
+    background: linear-gradient(135deg, #00897B, #26A69A) !important;
+    border: none;
+}
+
+/* Evitar transición en hover de cards en modo noche */
+[data-modo="noche"] .card:hover {
+    transform: none;
+}
+
+/* =============================================================
+   SECCIÓN 14: COMPONENTES DE PÁGINA INTERNA
+   ============================================================= */
+
+/* Contenedor principal con max-width */
+main.container-fluid {
+    max-width: 1500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Encabezado de página (título + botón acción) */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.page-header h2,
+.page-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.page-header h2 i,
+.page-header h3 i {
+    color: var(--accent);
+}
+
+/* Bienvenida en dashboard */
+.dash-welcome {
+    background: var(--card-header-bg);
+    border-radius: var(--card-radius);
+    padding: 1.5rem 2rem;
+    color: #ffffff;
+    margin-bottom: 1.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-welcome::after {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    pointer-events: none;
+}
+
+.dash-welcome h2,
+.dash-welcome h3 {
+    color: #ffffff !important;
+    margin: 0 0 0.25rem;
+}
+
+.dash-welcome .text-muted {
+    color: rgba(255,255,255,0.75) !important;
+}
+
+/* Tarjetas de módulo en dashboards */
+.module-card {
+    border: none !important;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    overflow: hidden;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.14) !important;
+}
+
+.module-card-icon {
+    height: 88px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 4px;
+    font-size: 2.4rem;
+    color: #ffffff;
+}
+
+.module-card .card-body {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.module-card h6 {
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: var(--text-primary);
+}
+
+.module-card .card-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.85rem;
+}
+
+/* Override table-dark para que use colores del tema */
+.table > thead.table-dark > tr > th,
+.table thead.table-dark th,
+thead.table-dark th {
+    background-color: var(--table-header-bg) !important;
+    color: var(--table-header-text) !important;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--table-header-text);
+    border-color: transparent !important;
+}
+
+/* Override Bootstrap color utilities por tema */
+[data-tema="ninos"] .text-primary      { color: var(--accent) !important; }
+[data-tema="ninos"] .border-primary    { border-color: var(--accent) !important; }
+[data-tema="ninos"] .bg-primary        { background-color: var(--btn-primary-bg) !important; }
+
+[data-tema="jovenes"] .text-primary    { color: var(--accent) !important; }
+[data-tema="jovenes"] .border-primary  { border-color: var(--accent) !important; }
+[data-tema="jovenes"] .bg-primary      { background-color: var(--btn-primary-bg) !important; }
+
+/* Formularios: sección separadora */
+.form-section {
+    padding: 1.25rem 0 0.5rem;
+}
+
+.form-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section-title i {
+    color: var(--accent);
+    margin-right: 0.4rem;
+}
+
+/* Auth pages */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--body-bg);
+    padding: 2rem 1rem;
+}
+
+.auth-brand-panel {
+    background: var(--nav-bg);
+    border-radius: var(--card-radius) 0 0 var(--card-radius);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    min-height: 480px;
+}
+
+.auth-brand-panel::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+}
+
+.auth-brand-panel::after {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+}
+
+.auth-brand-panel h1,
+.auth-brand-panel h2 {
+    color: #ffffff !important;
+}
+
+.auth-form-panel {
+    background: var(--card-bg);
+    border-radius: 0 var(--card-radius) var(--card-radius) 0;
+    padding: 3rem 2.5rem;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (max-width: 767px) {
+    .auth-brand-panel {
+        border-radius: var(--card-radius) var(--card-radius) 0 0;
+        min-height: auto;
+        padding: 2rem 1.5rem;
+    }
+    .auth-form-panel {
+        border-radius: 0 0 var(--card-radius) var(--card-radius);
+        padding: 2rem 1.5rem;
+        min-height: auto;
+    }
+}
+
+/* =============================================================
+   SECCIÓN 15: PATRONES DE ÍNDICE Y FORMULARIO
+   ============================================================= */
+
+/* Título de página (h2/h3 suelto dentro de col-12) */
+.col-12 > h2:first-child,
+.col-12 > h3:first-child {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+.col-12 > h2:first-child i,
+.col-12 > h3:first-child i {
+    color: var(--accent);
+}
+
+/* Encabezado de página con botón (d-flex) */
+.col-12 > .d-flex.justify-content-between.align-items-center {
+    padding-bottom: 0.85rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem !important;
+}
+
+.col-12 > .d-flex.justify-content-between h2,
+.col-12 > .d-flex.justify-content-between h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+}
+
+.col-12 > .d-flex.justify-content-between h2 i,
+.col-12 > .d-flex.justify-content-between h3 i {
+    color: var(--accent);
+}
+
+/* Card de búsqueda compacta */
+.card.shadow-sm.mb-4 > .card-body {
+    padding: 0.75rem 1rem;
+}
+
+/* Card de tabla: borde superior de acento */
+.card.shadow-sm > .card-body.table-responsive,
+.card.shadow-sm > .card-body > .table-responsive {
+    padding: 0;
+}
+
+.card.shadow-sm > .card-body.table-responsive .table,
+.card.shadow-sm > .card-body > .table-responsive .table,
+.card.shadow-sm > div > .table-responsive .table {
     margin-bottom: 0;
 }
-.pagination .page-link {
-    padding: 6px 14px;
-    font-size: 14px;
-    border-radius: 6px !important;
-    border: 1px solid #dee2e6;
-    color: #0d6efd;
-    transition: all 0.2s;
+
+/* Estado vacío en tablas */
+td.text-center.py-4 {
+    padding: 3rem 1rem !important;
 }
-.pagination .page-link:hover {
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-    color: #0a58ca;
-    text-decoration: none;
+
+td.text-center.py-4 .bi-inbox {
+    font-size: 2.5rem;
+    display: block;
+    opacity: 0.3;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
 }
-.pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: #ffffff;
+
+/* Grupo de botones de acción en tablas */
+.btn-sm + .form-control,
+.btn-sm + .btn-sm,
+td .btn-sm { margin: 1px; }
+
+td .btn-sm { min-width: 32px; }
+
+/* Card headers de colores consistentes con tema */
+.card-header.bg-warning,
+.card-header.bg-warning.text-dark {
+    background: linear-gradient(135deg, #b45309, #d97706) !important;
+    color: #ffffff !important;
 }
-.pagination .page-item.disabled .page-link {
-    color: #adb5bd;
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
+
+.card-header.bg-warning *,
+.card-header.bg-warning.text-dark * {
+    color: #ffffff !important;
 }
-[data-modo="noche"] .pagination .page-link {
-    background-color: #16213e;
-    border-color: #2a2a4a;
-    color: #a0c0ff;
+
+.card-header.bg-info {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9) !important;
+    color: #ffffff !important;
 }
-[data-modo="noche"] .pagination .page-link:hover {
-    background-color: #1f2940;
-    color: #ffffff;
+
+.card-header.bg-info * { color: #ffffff !important; }
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, #15803d, #22c55e) !important;
+    color: #ffffff !important;
 }
-[data-modo="noche"] .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: #ffffff;
+
+.card-header.bg-success * { color: #ffffff !important; }
+
+.card-header.bg-danger {
+    background: linear-gradient(135deg, #b91c1c, #ef4444) !important;
+    color: #ffffff !important;
 }
-[data-modo="noche"] .pagination .page-item.disabled .page-link {
-    background-color: #1a1a2e;
-    border-color: #2a2a4a;
-    color: #555577;
+
+.card-header.bg-danger * { color: #ffffff !important; }
+
+/* Interruptor de permiso */
+.permiso-switch-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-radius);
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.permiso-switch-card:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--dropdown-hover);
+}
+
+.permiso-switch-card label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    margin: 0;
+}
+
+.permiso-switch-card .form-check-input {
+    width: 2.2em;
+    height: 1.2em;
+    cursor: pointer;
+    margin: 0;
+}
+
+.permiso-switch-card .form-check-input:checked {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+}
+
+/* Tarjeta de vuelo en vistas cliente */
+.flight-row {
+    border-left: 4px solid var(--accent);
+    border-radius: var(--card-radius);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.flight-row:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1) !important;
+}
+
+.iata-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--btn-radius);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+}
+
+/* =============================================================
+   SECCIÓN 16: SCROLLBAR PERSONALIZADO
+   ============================================================= */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--body-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 10px;
+    border: 2px solid var(--body-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--btn-primary-hover);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--body-bg);
 }

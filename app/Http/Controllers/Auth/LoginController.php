@@ -73,8 +73,15 @@ class LoginController extends Controller
             ]);
             $request->session()->regenerate();
 
-            // Redirigir según rol
-            return redirect()->route($this->obtenerDashboard($usuario));
+            $dashboard = $this->obtenerDashboard($usuario);
+
+            // Si el usuario es cliente y tiene un vuelo pendiente, llevarlo directo
+            if ($dashboard === 'cliente.dashboard' && session()->has('vuelo_pendiente')) {
+                $vueloPendiente = session()->pull('vuelo_pendiente');
+                return redirect()->route('cliente.seleccionar.asiento', $vueloPendiente['programacion_id']);
+            }
+
+            return redirect()->route($dashboard);
         }
 
         // Login fallido: incrementar intentos
@@ -124,7 +131,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('welcome');
     }
 
     public function showRegisterForm()

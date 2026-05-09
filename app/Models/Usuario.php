@@ -29,6 +29,7 @@ class Usuario extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'rol_id'   => 'integer',
         ];
     }
 

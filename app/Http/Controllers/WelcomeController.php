@@ -55,7 +55,15 @@ class WelcomeController extends Controller
     public function seleccionar(ProgramacionVuelo $programacion)
     {
         if (!auth()->check()) {
-            session()->put('url.intended', route('cliente.seleccionar.asiento', $programacion));
+            $programacion->loadMissing('ruta');
+
+            session(['vuelo_pendiente' => [
+                'programacion_id' => $programacion->id,
+                'origen'          => $programacion->ruta->aeropuerto_origen_id,
+                'destino'         => $programacion->ruta->aeropuerto_destino_id,
+                'fecha'           => $programacion->fecha_salida,
+            ]]);
+
             return redirect()->route('login')
                 ->with('info', 'Debe iniciar sesión para comprar un pasaje.');
         }

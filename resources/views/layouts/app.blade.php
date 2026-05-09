@@ -46,7 +46,7 @@
                     </li>
                     {{-- Usuario --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i> {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -90,7 +90,7 @@
     </main>
     <footer class="text-center py-3 mt-4">
         <p class="mb-0">&copy; 2026 Boliviana de Aviación (BoA) - Sistema de Información Web</p>
-        <small style="color: #adb5bd;">
+        <small class="footer-visits">
             <i class="bi bi-eye"></i> Visitas a esta página: <strong>{{ $contadorVisitas ?? 0 }}</strong>
         </small>
     </footer>

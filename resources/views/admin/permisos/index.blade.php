@@ -7,49 +7,49 @@
 @endsection
 
 @section('contenido')
-<div class="row">
-    <div class="col-12">
-        <h2><i class="bi bi-key"></i> Gestionar Permisos</h2>
-        <p class="text-muted">Administre los permisos de acceso para cada rol del sistema.</p>
 
-        <div class="row">
-            @foreach($roles as $rol)
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="bi bi-shield-lock"></i> {{ $rol->nombre }}</h5>
-                        <a href="{{ route('admin.permisos.edit', $rol) }}" class="btn btn-sm btn-light">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <table class="table table-sm align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Módulo</th>
-                                    <th class="text-center">Acceso</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($tablas as $tabla)
-                                <tr>
-                                    <td>{{ $tabla }}</td>
-                                    <td class="text-center">
-                                        @if(isset($rol->permisos_data[$tabla]) && $rol->permisos_data[$tabla])
-                                            <i class="bi bi-check-circle-fill text-success"></i>
-                                        @else
-                                            <i class="bi bi-x-circle-fill text-danger"></i>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0"><i class="bi bi-key-fill" style="color:var(--accent)"></i> Gestionar Permisos</h2>
+    <span class="text-muted small">Configura el acceso por módulo para cada rol</span>
+</div>
+
+<div class="row g-4">
+    @foreach($roles as $rol)
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">
+                    <i class="bi bi-shield-lock me-1"></i>{{ $rol->nombre }}
+                </span>
+                <a href="{{ route('admin.permisos.edit', $rol) }}" class="btn btn-sm btn-light">
+                    <i class="bi bi-pencil me-1"></i>Editar
+                </a>
             </div>
-            @endforeach
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @foreach($tablas as $tabla)
+                    @php $tiene = isset($rol->permisos_data[$tabla]) && $rol->permisos_data[$tabla]; @endphp
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-3 py-2"
+                        style="background:var(--card-bg);border-color:var(--border-color)">
+                        <span class="small" style="color:var(--text-primary)">
+                            {{ $tabla }}
+                        </span>
+                        @if($tiene)
+                            <span class="badge" style="background:var(--btn-primary-bg);font-size:0.7rem">
+                                <i class="bi bi-check-lg me-1"></i>Activo
+                            </span>
+                        @else
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary" style="font-size:0.7rem">
+                                Sin acceso
+                            </span>
+                        @endif
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
     </div>
+    @endforeach
 </div>
+
 @endsection
