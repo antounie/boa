@@ -1200,7 +1200,76 @@ td .btn-sm { min-width: 32px; }
 }
 
 /* =============================================================
-   SECCIÓN 16: SCROLLBAR PERSONALIZADO
+   SECCIÓN 16: KPI CARDS Y GRÁFICOS DE REPORTES
+   ============================================================= */
+
+.kpi-card {
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
+.kpi-card .kpi-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2.4rem;
+    opacity: 0.12;
+    color: var(--accent);
+}
+
+.kpi-card .kpi-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+    margin-bottom: 0.2rem;
+}
+
+.kpi-card .kpi-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-secondary);
+}
+
+.kpi-card.kpi-danger  { border-left-color: #dc3545; }
+.kpi-card.kpi-danger  .kpi-value { color: #dc3545; }
+.kpi-card.kpi-danger  .kpi-icon  { color: #dc3545; }
+
+.kpi-card.kpi-success { border-left-color: #198754; }
+.kpi-card.kpi-success .kpi-value { color: #198754; }
+.kpi-card.kpi-success .kpi-icon  { color: #198754; }
+
+.kpi-card.kpi-warning { border-left-color: #f59e0b; }
+.kpi-card.kpi-warning .kpi-value { color: #d97706; }
+.kpi-card.kpi-warning .kpi-icon  { color: #f59e0b; }
+
+/* Botones de rango de fecha */
+.rango-btn {
+    font-size: 0.78rem;
+    padding: 3px 10px;
+    border-radius: var(--btn-radius);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.rango-btn.active {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    color: #fff !important;
+}
+
+/* =============================================================
+   SECCIÓN 17: SCROLLBAR PERSONALIZADO
    ============================================================= */
 
 ::-webkit-scrollbar {
