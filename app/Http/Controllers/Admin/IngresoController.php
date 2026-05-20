@@ -12,9 +12,8 @@ class IngresoController extends Controller
     {
         $query = Ingreso::with([
             'salida',
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino'
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino'
         ]);
 
         if ($request->filled('fecha_inicio')) {
@@ -27,7 +26,7 @@ class IngresoController extends Controller
 
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
-            $query->whereHas('programacionVuelo.vuelo', function ($q) use ($buscar) {
+            $query->whereHas('programacionVuelo', function ($q) use ($buscar) {
                 $q->where('codigo_vuelo', 'like', "%{$buscar}%");
             });
         }
@@ -44,9 +43,8 @@ class IngresoController extends Controller
     {
         $ingreso->load([
             'salida',
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
             'programacionVuelo.aeronave'
         ]);
 

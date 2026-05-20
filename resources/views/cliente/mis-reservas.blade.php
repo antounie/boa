@@ -36,19 +36,19 @@
             {{-- Vuelo --}}
             <div class="col-md-2">
                 <div class="text-muted small mb-1">Vuelo</div>
-                <div class="fw-bold">{{ $prog->vuelo->codigo_vuelo }}</div>
+                <div class="fw-bold">{{ $prog->codigo_vuelo }}</div>
             </div>
 
             {{-- Ruta --}}
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Ruta</div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="iata-badge">{{ $prog->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                    <span class="iata-badge">{{ $prog->aeropuertoOrigen->codigo_IATA }}</span>
                     <i class="bi bi-arrow-right" style="color:var(--accent)"></i>
-                    <span class="iata-badge">{{ $prog->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                    <span class="iata-badge">{{ $prog->aeropuertoDestino->codigo_IATA }}</span>
                 </div>
                 <div class="text-muted small mt-1">
-                    {{ $prog->ruta->aeropuertoOrigen->ciudad }} → {{ $prog->ruta->aeropuertoDestino->ciudad }}
+                    {{ $prog->aeropuertoOrigen->ciudad }} → {{ $prog->aeropuertoDestino->ciudad }}
                 </div>
             </div>
 

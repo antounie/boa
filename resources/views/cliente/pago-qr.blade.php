@@ -21,29 +21,46 @@
                         <table class="table table-bordered">
                             <tr>
                                 <th>Vuelo</th>
-                                <td>{{ $programacion->vuelo->codigo_vuelo }}</td>
+                                <td>{{ $programacion->codigo_vuelo }}</td>
                             </tr>
                             <tr>
                                 <th>Ruta</th>
-                                <td>{{ $programacion->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                                <td>
+                                    @if($subTramo)
+                                        {{ $subTramo->aeropuertoOrigen->codigo_IATA }} → {{ $subTramo->aeropuertoDestino->codigo_IATA }}
+                                        <small class="d-block text-muted">Tramo parcial · vuelo {{ $programacion->codigo_vuelo }}</small>
+                                    @else
+                                        {{ $programacion->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->aeropuertoDestino->codigo_IATA }}
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>Fecha</th>
                                 <td>{{ $programacion->fecha_salida }} {{ $programacion->hora_salida }}</td>
                             </tr>
                             <tr>
-                                <th>Asientos</th>
+                                <th>Asientos / Pasajeros</th>
                                 <td>
                                     @foreach($asientos as $asiento)
-                                    <div class="d-flex justify-content-between">
-                                        <span>{{ $asiento->numero }} ({{ $asiento->tipoClase->nombre }})</span>
-                                        <span class="text-muted ms-3">Bs. {{ number_format($programacion->precio_base * $asiento->tipoClase->multiplicador_precio, 2) }}</span>
+                                    @php
+                                        $precioProg = $programacion->precios->firstWhere('tipo_clase_id', $asiento->tipo_clase_id);
+                                        $precioAsiento = $precioProg ? $precioProg->precio : ($programacion->precio_base * $asiento->tipoClase->multiplicador_precio);
+                                        $pax = $pasajeros[$asiento->id] ?? null;
+                                    @endphp
+                                    <div class="border-bottom pb-1 mb-1">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-semibold">{{ $asiento->numero }} <small class="text-muted">({{ $asiento->tipoClase->nombre }})</small></span>
+                                            <span class="text-primary">Bs. {{ number_format($precioAsiento, 2) }}</span>
+                                        </div>
+                                        @if($pax)
+                                        <small class="text-muted"><i class="bi bi-person me-1"></i>{{ $pax['nombre'] }} {{ $pax['apellido'] }}</small>
+                                        @endif
                                     </div>
                                     @endforeach
                                 </td>
                             </tr>
                             <tr>
-                                <th>Pasajero</th>
+                                <th>Comprador</th>
                                 <td>{{ $cliente->nombre }} {{ $cliente->apellido }}</td>
                             </tr>
                             <tr class="table-success">

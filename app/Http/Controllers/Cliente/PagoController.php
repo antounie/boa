@@ -19,22 +19,57 @@ use App\Models\AsientoProgramacion;
 
 class PagoController extends Controller
 {
+    public function datosCompra(Request $request)
+    {
+        $request->validate([
+            'programacion_vuelo_id' => 'required|exists:programacion_vuelos,id',
+            'asiento_ids'           => 'required|array|min:1|max:10',
+            'asiento_ids.*'         => 'required|exists:asientos,id',
+            'sub_tramo_id'          => 'nullable|exists:tramos,id',
+        ]);
+
+        $programacion = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino', 'precios'])
+            ->find($request->programacion_vuelo_id);
+
+        $subTramo = $request->filled('sub_tramo_id')
+            ? \App\Models\Tramo::with(['aeropuertoOrigen', 'aeropuertoDestino'])->find($request->sub_tramo_id)
+            : null;
+
+        $cliente  = Cliente::where('usuario_id', auth()->id())->first();
+        $asientos = Asiento::with('tipoClase')->whereIn('id', $request->asiento_ids)->get();
+
+        return view('cliente.datos-pasajeros', compact('programacion', 'asientos', 'cliente', 'subTramo'));
+    }
+
     public function procesarPago(Request $request)
     {
         $request->validate([
             'programacion_vuelo_id' => 'required|exists:programacion_vuelos,id',
-            'asiento_ids'   => 'required|array|min:1|max:10',
-            'asiento_ids.*' => 'required|exists:asientos,id',
+            'asiento_ids'           => 'required|array|min:1|max:10',
+            'asiento_ids.*'         => 'required|exists:asientos,id',
+            'sub_tramo_id'          => 'nullable|exists:tramos,id',
+            'pasajeros'             => 'required|array',
+            'pasajeros.*.nombre'    => 'required|string|max:80',
+            'pasajeros.*.apellido'  => 'required|string|max:80',
         ]);
 
-        $programacion = ProgramacionVuelo::with(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave'])
+        $programacion = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino', 'aeronave', 'precios'])
             ->find($request->programacion_vuelo_id);
+
+        $subTramo = $request->filled('sub_tramo_id')
+            ? \App\Models\Tramo::with(['aeropuertoOrigen', 'aeropuertoDestino'])->find($request->sub_tramo_id)
+            : null;
 
         if ($programacion->estado !== 'Programado') {
             return redirect()->route('cliente.buscar')->with('error', 'Este vuelo ya no está disponible.');
         }
 
         $cliente = Cliente::where('usuario_id', auth()->id())->first();
+
+        if (!$cliente) {
+            return redirect()->route('cliente.dashboard')->with('error', 'No se encontró su perfil de cliente.');
+        }
+
         $asientos = Asiento::with('tipoClase')->whereIn('id', $request->asiento_ids)->get();
 
         // Verificar disponibilidad de cada asiento
@@ -53,8 +88,13 @@ class PagoController extends Controller
             return back()->with('error', 'Los siguientes asientos ya no están disponibles: ' . implode(', ', $noDisponibles));
         }
 
-        // Calcular monto total
-        $monto = $asientos->sum(fn($a) => $programacion->precio_base * $a->tipoClase->multiplicador_precio);
+        // Calcular monto total usando precios por clase configurados
+        $monto = $asientos->sum(function ($a) use ($programacion) {
+            $precioPorClase = $programacion->precios->firstWhere('tipo_clase_id', $a->tipo_clase_id);
+            return $precioPorClase
+                ? (float) $precioPorClase->precio
+                : $programacion->precio_base * $a->tipoClase->multiplicador_precio;
+        });
 
         $identificador = 'BOA-' . strtoupper(Str::random(10));
         $concepto = $asientos->map(fn($a) => "Asiento {$a->numero} ({$a->tipoClase->nombre})")->implode(', ');
@@ -63,11 +103,11 @@ class PagoController extends Controller
         $resultado = $libelula->registrarDeuda([
             'email'        => $cliente->email,
             'identificador'=> $identificador,
-            'descripcion'  => "Pasaje {$programacion->vuelo->codigo_vuelo} {$programacion->ruta->aeropuertoOrigen->codigo_IATA}-{$programacion->ruta->aeropuertoDestino->codigo_IATA}",
+            'descripcion'  => "Pasaje {$programacion->codigo_vuelo} {$programacion->aeropuertoOrigen->codigo_IATA}-{$programacion->aeropuertoDestino->codigo_IATA}",
             'nombre'       => $cliente->nombre,
             'apellido'     => $cliente->apellido,
             'monto'        => $monto,
-            'concepto'     => "Pasaje aéreo {$programacion->vuelo->codigo_vuelo} - {$concepto}",
+            'concepto'     => "Pasaje aéreo {$programacion->codigo_vuelo} - {$concepto}",
             'callback_url' => route('cliente.pago.callback', ['identificador' => $identificador]),
             'url_retorno'  => route('cliente.pago.resultado', ['identificador' => $identificador]),
         ]);
@@ -81,14 +121,17 @@ class PagoController extends Controller
                 'identificador'         => $identificador,
                 'programacion_vuelo_id' => $programacion->id,
                 'asiento_ids'           => $request->asiento_ids,
+                'sub_tramo_id'          => $request->sub_tramo_id,
                 'cliente_id'            => $cliente->id,
                 'monto'                 => $monto,
                 'libelula_id'           => $resultado['id_transaccion'],
                 'modo'                  => $resultado['modo'],
+                'pasajeros'             => $request->pasajeros,
             ]
         ]);
 
-        return view('cliente.pago-qr', compact('programacion', 'asientos', 'cliente', 'monto', 'identificador', 'resultado'));
+        $pasajeros = $request->pasajeros;
+        return view('cliente.pago-qr', compact('programacion', 'asientos', 'cliente', 'monto', 'identificador', 'resultado', 'subTramo', 'pasajeros'));
     }
 
     public function callback(Request $request, $identificador)
@@ -210,40 +253,41 @@ class PagoController extends Controller
                     ->with('error', "Los asientos {$numeros} ya fueron tomados por otra persona.");
             }
 
-            $transaccion = Transaccion::create([
-                'referencia'  => $pagoPendiente['libelula_id'],
-                'monto'       => $pagoPendiente['monto'],
-                'metodo_pago' => 'QR',
-                'estado'      => 'Aprobado',
+            $venta = Venta::create([
+                'codigo_venta'          => 'VTA-' . strtoupper(Str::random(8)),
+                'programacion_vuelo_id' => $programacion->id,
+                'cliente_id'            => $pagoPendiente['cliente_id'],
+                'reserva_id'            => null,
+                'monto_total'           => $pagoPendiente['monto'],
+                'estado'                => 'Confirmada',
             ]);
 
+            Transaccion::create([
+                'venta_id'   => $venta->id,
+                'referencia' => $pagoPendiente['libelula_id'],
+                'monto'      => $pagoPendiente['monto'],
+                'metodo_pago'=> 'QR',
+                'estado'     => 'Aprobado',
+            ]);
+
+            $pasajeros = $pagoPendiente['pasajeros'] ?? [];
             foreach ($asientoIds as $asientoId) {
-                $asiento = $asientos[$asientoId];
-                $montoAsiento = $programacion->precio_base * $asiento->tipoClase->multiplicador_precio;
-
-                $venta = Venta::create([
-                    'codigo_venta'          => 'VTA-' . strtoupper(Str::random(8)),
-                    'programacion_vuelo_id' => $programacion->id,
-                    'cliente_id'            => $pagoPendiente['cliente_id'],
-                    'asiento_id'            => $asientoId,
-                    'transaccion_id'        => $transaccion->id,
-                    'reserva_id'            => null,
-                    'metodo_pago'           => 'QR',
-                    'monto_total'           => $montoAsiento,
-                    'estado'               => 'Confirmada',
-                ]);
-
                 $ticket = Ticket::create([
-                    'numero_ticket' => 'TKT-' . strtoupper(Str::random(8)),
-                    'venta_id'      => $venta->id,
-                    'estado'        => 'Emitido',
+                    'numero_ticket'    => 'TKT-' . strtoupper(Str::random(8)),
+                    'venta_id'         => $venta->id,
+                    'asiento_id'       => $asientoId,
+                    'sub_tramo_id'     => $pagoPendiente['sub_tramo_id'] ?? null,
+                    'estado'           => 'Emitido',
+                    'pasajero_nombre'  => $pasajeros[$asientoId]['nombre'] ?? null,
+                    'pasajero_apellido'=> $pasajeros[$asientoId]['apellido'] ?? null,
                 ]);
 
                 $asientoProgs[$asientoId]->update(['estado' => 'Ocupado']);
 
-                $ventas[]  = $venta;
                 $tickets[] = $ticket;
             }
+
+            $ventas[] = $venta;
 
             $cantidad = count($asientoIds);
             $programacion->increment('asientos_vendidos', $cantidad);

@@ -9,6 +9,7 @@ class Transaccion extends Model
     protected $table = 'transacciones';
 
     protected $fillable = [
+        'venta_id',
         'referencia',
         'monto',
         'metodo_pago',
@@ -17,6 +18,6 @@ class Transaccion extends Model
 
     public function venta()
     {
-        return $this->hasOne(Venta::class, 'transaccion_id');
+        return $this->belongsTo(Venta::class, 'venta_id');
     }
 }

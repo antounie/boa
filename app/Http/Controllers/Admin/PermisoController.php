@@ -3,27 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Permiso;
 use App\Models\Rol;
 use App\Models\RolPermiso;
 use Illuminate\Http\Request;
 
 class PermisoController extends Controller
 {
-    private function getTablas()
-    {
-        return [
-            'usuarios', 'roles', 'permisos', 'vuelos', 'programacion_vuelos',
-            'rutas', 'aeropuertos', 'aeronaves', 'asientos', 'tipo_clases',
-            'empleados', 'tripulaciones', 'clientes', 'reservas', 'ventas',
-            'tickets', 'transacciones', 'salidas', 'devoluciones', 'ingresos',
-            'egresos', 'reportes'
-        ];
-    }
-
     public function index()
     {
         $roles = Rol::all();
-        $tablas = $this->getTablas();
+        $tablas = Permiso::orderBy('nombre')->pluck('nombre')->toArray();
 
         foreach ($roles as $rol) {
             $rol->permisos_data = RolPermiso::where('rol_id', $rol->id)
@@ -36,7 +26,7 @@ class PermisoController extends Controller
 
     public function edit(Rol $rol)
     {
-        $tablas = $this->getTablas();
+        $tablas = Permiso::orderBy('nombre')->pluck('nombre')->toArray();
         $permisosActuales = RolPermiso::where('rol_id', $rol->id)
             ->pluck('acceso', 'tabla')
             ->toArray();
@@ -46,13 +36,13 @@ class PermisoController extends Controller
 
     public function update(Request $request, Rol $rol)
     {
-        $tablas = $this->getTablas();
+        $permisos = Permiso::all()->keyBy('nombre');
         $accesos = $request->input('acceso', []);
 
-        foreach ($tablas as $tabla) {
+        foreach ($permisos as $nombre => $permiso) {
             RolPermiso::updateOrCreate(
-                ['rol_id' => $rol->id, 'tabla' => $tabla],
-                ['acceso' => in_array($tabla, $accesos) ? true : false]
+                ['rol_id' => $rol->id, 'tabla' => $nombre],
+                ['permiso_id' => $permiso->id, 'acceso' => in_array($nombre, $accesos)]
             );
         }
 

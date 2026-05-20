@@ -30,4 +30,11 @@ class Ruta extends Model
     {
         return $this->hasMany(ProgramacionVuelo::class, 'ruta_id');
     }
+
+    public function tramos()
+    {
+        return $this->belongsToMany(Tramo::class, 'ruta_tramo')
+                    ->withPivot('orden')
+                    ->orderBy('ruta_tramo.orden');
+    }
 }

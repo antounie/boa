@@ -28,12 +28,12 @@
         <p>Generado: {{ date('d/m/Y H:i') }}</p>
     </div>
 
-    @if($filtros['fecha_inicio'] || $filtros['fecha_fin'] || $filtros['estado'])
+    @if(($filtros['fecha_inicio'] ?? null) || ($filtros['fecha_fin'] ?? null) || ($filtros['estado'] ?? null))
     <div class="filtros">
         <strong>Filtros:</strong>
-        @if($filtros['fecha_inicio']) Desde: {{ $filtros['fecha_inicio'] }} @endif
-        @if($filtros['fecha_fin']) Hasta: {{ $filtros['fecha_fin'] }} @endif
-        @if($filtros['estado']) Estado: {{ $filtros['estado'] }} @endif
+        @if($filtros['fecha_inicio'] ?? null) Desde: {{ $filtros['fecha_inicio'] }} @endif
+        @if($filtros['fecha_fin'] ?? null) Hasta: {{ $filtros['fecha_fin'] }} @endif
+        @if($filtros['estado'] ?? null) Estado: {{ $filtros['estado'] }} @endif
     </div>
     @endif
 
@@ -67,10 +67,10 @@
             <tr>
                 <td>{{ $venta->codigo_venta }}</td>
                 <td>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellido }}</td>
-                <td>{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                <td>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
-                <td>{{ $venta->asiento->numero }} ({{ $venta->asiento->tipoClase->nombre }})</td>
-                <td>{{ $venta->metodo_pago }}</td>
+                <td>{{ $venta->programacionVuelo->codigo_vuelo }}</td>
+                <td>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
+                <td>{{ $venta->tickets->first()->asiento->numero }} ({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</td>
+                <td>{{ ($venta->transacciones->first()->metodo_pago ?? '-') }}</td>
                 <td>${{ number_format($venta->monto_total, 2) }}</td>
                 <td>{{ $venta->estado }}</td>
                 <td>{{ $venta->created_at->format('d/m/Y') }}</td>

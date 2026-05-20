@@ -78,7 +78,11 @@ class LoginController extends Controller
             // Si el usuario es cliente y tiene un vuelo pendiente, llevarlo directo
             if ($dashboard === 'cliente.dashboard' && session()->has('vuelo_pendiente')) {
                 $vueloPendiente = session()->pull('vuelo_pendiente');
-                return redirect()->route('cliente.seleccionar.asiento', $vueloPendiente['programacion_id']);
+                $params = ['programacion' => $vueloPendiente['programacion_id']];
+                if (!empty($vueloPendiente['sub_tramo_id'])) {
+                    $params['sub_tramo_id'] = $vueloPendiente['sub_tramo_id'];
+                }
+                return redirect()->route('cliente.seleccionar.asiento', $params);
             }
 
             return redirect()->route($dashboard);

@@ -55,13 +55,13 @@
                             <td><strong>{{ $venta->codigo_venta }}</strong></td>
                             <td>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellido }}
                                 <br><small class="text-muted">{{ $venta->cliente->documento_identidad }}</small></td>
-                            <td>{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                            <td>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
-                            <td>{{ $venta->asiento->numero }} ({{ $venta->asiento->tipoClase->nombre }})</td>
+                            <td>{{ $venta->programacionVuelo->codigo_vuelo }}</td>
+                            <td>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
+                            <td>{{ $venta->tickets->first()->asiento->numero }} ({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</td>
                             <td class="fw-bold">${{ number_format($venta->monto_total, 2) }}</td>
                             <td>
-                                @if($venta->ticket)
-                                    <span class="badge bg-primary">{{ $venta->ticket->numero_ticket }}</span>
+                                @if($venta->tickets->isNotEmpty())
+                                    <span class="badge bg-primary">{{ $venta->tickets->first()->numero_ticket }}</span>
                                 @else
                                     -
                                 @endif

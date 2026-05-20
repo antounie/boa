@@ -9,7 +9,7 @@ use App\Http\Controllers\Operador\AeropuertoController;
 use App\Http\Controllers\Operador\TipoClaseController;
 use App\Http\Controllers\Operador\AeronaveController;
 use App\Http\Controllers\Operador\RutaController;
-use App\Http\Controllers\Operador\VueloController;
+use App\Http\Controllers\Operador\TramoController;
 use App\Http\Controllers\Operador\ProgramacionVueloController;
 use App\Http\Controllers\Operador\AsientoController;
 use App\Http\Controllers\Operador\EmpleadoController;
@@ -26,6 +26,9 @@ use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\BuscadorController;
 use App\Http\Controllers\Cliente\PagoController;
 use App\Http\Controllers\WelcomeController;
+
+// Verificación pública de ticket (sin autenticación, para QR)
+Route::get('/ticket/verificar/{numero}', [ReservaController::class, 'verificarTicket'])->name('ticket.verificar');
 
 // Rutas públicas
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -55,7 +58,9 @@ Route::middleware('auth')->group(function () {
 
     // CRUD Usuarios
     Route::middleware('rol:usuarios')->group(function () {
-        Route::resource('/admin/usuarios', UsuarioController::class)->names('admin.usuarios');
+        Route::resource('/admin/usuarios', UsuarioController::class)
+            ->names('admin.usuarios')
+            ->only(['index', 'create', 'store', 'edit', 'update']);
         Route::patch('/admin/usuarios/{usuario}/toggle-status', [UsuarioController::class, 'toggleStatus'])->name('admin.usuarios.toggle-status');
     });
 
@@ -138,20 +143,23 @@ Route::middleware('auth')->group(function () {
         Route::patch('/operador/aeronaves/{aeronave}/toggle-status', [AeronaveController::class, 'toggleStatus'])->name('operador.aeronaves.toggle-status');
     });
 
-    // CRUD Rutas
+    // CRUD Rutas + gestión de tramos
     Route::middleware('rol:rutas')->group(function () {
         Route::resource('/operador/rutas', RutaController::class)->names('operador.rutas')->parameters(['rutas' => 'ruta']);
+        Route::post('/operador/rutas/{ruta}/tramos', [RutaController::class, 'attachTramo'])->name('operador.rutas.tramos.attach');
+        Route::delete('/operador/rutas/{ruta}/tramos/{tramo}', [RutaController::class, 'detachTramo'])->name('operador.rutas.tramos.detach');
     });
 
-    // CRUD Vuelos
-    Route::middleware('rol:vuelos')->group(function () {
-        Route::resource('/operador/vuelos', VueloController::class)->names('operador.vuelos')->parameters(['vuelos' => 'vuelo']);
-        Route::patch('/operador/vuelos/{vuelo}/toggle-status', [VueloController::class, 'toggleStatus'])->name('operador.vuelos.toggle-status');
+    // CRUD Tramos
+    Route::middleware('rol:tramos')->group(function () {
+        Route::resource('/operador/tramos', TramoController::class)->names('operador.tramos')->parameters(['tramos' => 'tramo']);
     });
 
     // CRUD Programación de Vuelos
     Route::middleware('rol:programacion_vuelos')->group(function () {
         Route::resource('/operador/programaciones', ProgramacionVueloController::class)->names('operador.programaciones')->parameters(['programaciones' => 'programacion']);
+        Route::get('/operador/programaciones/{programacion}/reprogramar', [ProgramacionVueloController::class, 'reprogramar'])->name('operador.programaciones.reprogramar');
+        Route::put('/operador/programaciones/{programacion}/reprogramar', [ProgramacionVueloController::class, 'guardarReprogramacion'])->name('operador.programaciones.guardar-reprogramacion');
     });
 
     // CRUD Asientos
@@ -203,8 +211,10 @@ Route::middleware('auth')->group(function () {
 
         // Tickets
         Route::get('/cliente/mis-tickets', [ReservaController::class, 'misTickets'])->name('cliente.mis.tickets');
+        Route::get('/cliente/tickets/{ticket}/pdf', [ReservaController::class, 'downloadTicketPdf'])->name('cliente.ticket.pdf');
 
         // Pagos con QR
+        Route::post('/cliente/datos-pasajeros', [PagoController::class, 'datosCompra'])->name('cliente.datos.pasajeros');
         Route::post('/cliente/procesar-pago', [PagoController::class, 'procesarPago'])->name('cliente.procesar.pago');
         Route::get('/cliente/pago/callback/{identificador}', [PagoController::class, 'callback'])->name('cliente.pago.callback');
         Route::get('/cliente/pago/resultado/{identificador}', [PagoController::class, 'resultado'])->name('cliente.pago.resultado');

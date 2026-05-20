@@ -27,11 +27,11 @@
         <p>Generado: {{ date('d/m/Y H:i') }}</p>
     </div>
 
-    @if($filtros['fecha_inicio'] || $filtros['fecha_fin'])
+    @if(($filtros['fecha_inicio'] ?? null) || ($filtros['fecha_fin'] ?? null))
     <div class="filtros">
         <strong>Filtros:</strong>
-        @if($filtros['fecha_inicio']) Desde: {{ $filtros['fecha_inicio'] }} @endif
-        @if($filtros['fecha_fin']) Hasta: {{ $filtros['fecha_fin'] }} @endif
+        @if($filtros['fecha_inicio'] ?? null) Desde: {{ $filtros['fecha_inicio'] }} @endif
+        @if($filtros['fecha_fin'] ?? null) Hasta: {{ $filtros['fecha_fin'] }} @endif
     </div>
     @endif
 
@@ -62,7 +62,7 @@
                 <td>{{ $egreso->id }}</td>
                 <td>{{ $egreso->devolucion->venta->codigo_venta }}</td>
                 <td>{{ $egreso->devolucion->cliente->nombre }} {{ $egreso->devolucion->cliente->apellido }}</td>
-                <td>{{ $egreso->devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
+                <td>{{ $egreso->devolucion->venta->programacionVuelo->codigo_vuelo }}</td>
                 <td>{{ $egreso->devolucion->motivo }}</td>
                 <td>${{ number_format($egreso->monto_devuelto, 2) }}</td>
                 <td>{{ $egreso->created_at->format('d/m/Y H:i') }}</td>

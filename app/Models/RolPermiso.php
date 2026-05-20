@@ -10,6 +10,7 @@ class RolPermiso extends Model
 
     protected $fillable = [
         'rol_id',
+        'permiso_id',
         'tabla',
         'acceso',
     ];
@@ -17,5 +18,10 @@ class RolPermiso extends Model
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'rol_id');
+    }
+
+    public function permiso()
+    {
+        return $this->belongsTo(Permiso::class, 'permiso_id');
     }
 }

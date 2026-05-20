@@ -74,8 +74,8 @@
                         @forelse($ingresos as $ingreso)
                         <tr>
                             <td>{{ $ingreso->id }}</td>
-                            <td><strong class="text-primary">{{ $ingreso->programacionVuelo->vuelo->codigo_vuelo }}</strong></td>
-                            <td>{{ $ingreso->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                            <td><strong class="text-primary">{{ $ingreso->programacionVuelo->codigo_vuelo }}</strong></td>
+                            <td>{{ $ingreso->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
                             <td class="text-center"><span class="badge bg-primary">{{ $ingreso->cantidad_pasajes }}</span></td>
                             <td class="text-center text-success fw-bold">${{ number_format($ingreso->monto_total, 2) }}</td>
                             <td>{{ $ingreso->created_at->format('d/m/Y H:i') }}</td>

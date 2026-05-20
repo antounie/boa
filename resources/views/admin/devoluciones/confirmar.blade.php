@@ -30,11 +30,11 @@
                     </tr>
                     <tr>
                         <th>Vuelo</th>
-                        <td>{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
+                        <td>{{ $venta->programacionVuelo->codigo_vuelo }}</td>
                     </tr>
                     <tr>
                         <th>Ruta</th>
-                        <td>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                        <td>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
                     </tr>
                     <tr>
                         <th>Fecha Vuelo</th>
@@ -42,13 +42,13 @@
                     </tr>
                     <tr>
                         <th>Asiento</th>
-                        <td>{{ $venta->asiento->numero }} ({{ $venta->asiento->tipoClase->nombre }})</td>
+                        <td>{{ $venta->tickets->first()->asiento->numero }} ({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</td>
                     </tr>
                     <tr>
                         <th>Ticket</th>
                         <td>
-                            @if($venta->ticket)
-                                {{ $venta->ticket->numero_ticket }} — <span class="badge bg-{{ $venta->ticket->estado === 'Emitido' ? 'success' : 'danger' }}">{{ $venta->ticket->estado }}</span>
+                            @if($venta->tickets->isNotEmpty())
+                                {{ $venta->tickets->first()->numero_ticket }} — <span class="badge bg-{{ $venta->tickets->first()->estado === 'Emitido' ? 'success' : 'danger' }}">{{ $venta->tickets->first()->estado }}</span>
                             @else
                                 -
                             @endif

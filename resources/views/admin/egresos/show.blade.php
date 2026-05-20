@@ -29,12 +29,12 @@
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <strong>Vuelo:</strong>
-                        <p>{{ $egreso->devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }} |
-                        {{ $egreso->devolucion->venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $egreso->devolucion->venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</p>
+                        <p>{{ $egreso->devolucion->venta->programacionVuelo->codigo_vuelo }} |
+                        {{ $egreso->devolucion->venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $egreso->devolucion->venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</p>
                     </div>
                     <div class="col-md-4">
                         <strong>Asiento:</strong>
-                        <p>{{ $egreso->devolucion->venta->asiento->numero }} ({{ $egreso->devolucion->venta->asiento->tipoClase->nombre }})</p>
+                        <p>{{ $egreso->devolucion->venta->tickets->first()->asiento->numero }} ({{ $egreso->devolucion->venta->tickets->first()->asiento->tipoClase->nombre }})</p>
                     </div>
                     <div class="col-md-4">
                         <strong>Fecha Egreso:</strong>

@@ -77,7 +77,7 @@
                             <td>{{ $egreso->id }}</td>
                             <td><strong>{{ $egreso->devolucion->venta->codigo_venta }}</strong></td>
                             <td>{{ $egreso->devolucion->cliente->nombre }} {{ $egreso->devolucion->cliente->apellido }}</td>
-                            <td>{{ $egreso->devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
+                            <td>{{ $egreso->devolucion->venta->programacionVuelo->codigo_vuelo }}</td>
                             <td>{{ Str::limit($egreso->devolucion->motivo, 30) }}</td>
                             <td class="text-center text-danger fw-bold">${{ number_format($egreso->monto_devuelto, 2) }}</td>
                             <td>{{ $egreso->created_at->format('d/m/Y H:i') }}</td>

@@ -15,8 +15,8 @@
             </div>
             <div class="card-body p-4">
                 <div class="alert alert-info">
-                    <strong>Vuelo:</strong> {{ $programacion->vuelo->codigo_vuelo }} |
-                    {{ $programacion->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->ruta->aeropuertoDestino->codigo_IATA }} |
+                    <strong>Vuelo:</strong> {{ $programacion->codigo_vuelo }} |
+                    {{ $programacion->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->aeropuertoDestino->codigo_IATA }} |
                     {{ $programacion->fecha_salida }} {{ $programacion->hora_salida }}
                 </div>
 

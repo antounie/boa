@@ -8,6 +8,7 @@ use App\Models\Aeronave;
 use App\Models\TipoClase;
 use Illuminate\Http\Request;
 use App\Models\AsientoProgramacion;
+use App\Models\ProgramacionVuelo;
 
 class AsientoController extends Controller
 {
@@ -50,12 +51,10 @@ class AsientoController extends Controller
         $aeronave = Aeronave::find($request->aeronave_id);
         $asientosActuales = Asiento::where('aeronave_id', $aeronave->id)->count();
 
-        // Verificar que no exceda la capacidad
         if ($asientosActuales >= $aeronave->capacidad_total) {
             return back()->withErrors(['numero' => "La aeronave {$aeronave->matricula} ya tiene todos sus asientos configurados ({$aeronave->capacidad_total})."])->withInput();
         }
 
-        // Verificar que no exista el mismo número en la aeronave
         $existe = Asiento::where('aeronave_id', $request->aeronave_id)
             ->where('numero', $request->numero)
             ->exists();
@@ -64,12 +63,15 @@ class AsientoController extends Controller
             return back()->withErrors(['numero' => 'Este número de asiento ya existe en esta aeronave.'])->withInput();
         }
 
-        Asiento::create([
+        $asiento = Asiento::create([
             'aeronave_id' => $request->aeronave_id,
             'numero' => strtoupper($request->numero),
             'fila' => $request->fila,
             'tipo_clase_id' => $request->tipo_clase_id,
         ]);
+
+        $this->sincronizarConProgramaciones($asiento);
+        $this->recalcularEstadoProgramaciones($request->aeronave_id);
 
         return redirect()->route('operador.asientos.index', ['aeronave_id' => $request->aeronave_id])
             ->with('success', 'Asiento registrado exitosamente.');
@@ -119,6 +121,10 @@ class AsientoController extends Controller
         }
 
         $asiento->delete();
+
+        $nuevaCapacidad = Asiento::where('aeronave_id', $aeronave_id)->count();
+        Aeronave::where('id', $aeronave_id)->update(['capacidad_total' => $nuevaCapacidad]);
+        $this->recalcularEstadoProgramaciones($aeronave_id);
 
         return redirect()->route('operador.asientos.index', ['aeronave_id' => $aeronave_id])
             ->with('success', 'Asiento eliminado exitosamente.');
@@ -178,6 +184,7 @@ class AsientoController extends Controller
         }
 
         $creados = 0;
+        $nuevosAsientos = [];
         ksort($filasConfig);
 
         foreach ($filasConfig as $fila => $claseId) {
@@ -188,7 +195,7 @@ class AsientoController extends Controller
                     ->exists();
 
                 if (!$existe) {
-                    Asiento::create([
+                    $nuevosAsientos[] = Asiento::create([
                         'aeronave_id' => $aeronave->id,
                         'numero' => $numero,
                         'fila' => $fila,
@@ -199,8 +206,45 @@ class AsientoController extends Controller
             }
         }
 
+        foreach ($nuevosAsientos as $asiento) {
+            $this->sincronizarConProgramaciones($asiento);
+        }
+
+        $aeronave->update(['capacidad_total' => Asiento::where('aeronave_id', $aeronave->id)->count()]);
+        $this->recalcularEstadoProgramaciones($aeronave->id);
+
         return redirect()->route('operador.asientos.index', ['aeronave_id' => $aeronave->id])
             ->with('success', "{$creados} asientos generados exitosamente.");
+    }
+
+    private function sincronizarConProgramaciones(Asiento $asiento): void
+    {
+        ProgramacionVuelo::where('aeronave_id', $asiento->aeronave_id)
+            ->whereIn('estado', ['Programado', 'Completo'])
+            ->pluck('id')
+            ->each(function ($progId) use ($asiento) {
+                AsientoProgramacion::firstOrCreate(
+                    ['asiento_id' => $asiento->id, 'programacion_vuelo_id' => $progId],
+                    ['estado' => 'Disponible']
+                );
+            });
+    }
+
+    private function recalcularEstadoProgramaciones(int $aeronaveId): void
+    {
+        ProgramacionVuelo::where('aeronave_id', $aeronaveId)
+            ->whereIn('estado', ['Programado', 'Completo'])
+            ->get()
+            ->each(function ($prog) {
+                $disponibles = AsientoProgramacion::where('programacion_vuelo_id', $prog->id)
+                    ->where('estado', 'Disponible')->count();
+
+                if ($prog->estado === 'Completo' && $disponibles > 0) {
+                    $prog->update(['estado' => 'Programado']);
+                } elseif ($prog->estado === 'Programado' && $disponibles === 0 && $prog->asientos_vendidos > 0) {
+                    $prog->update(['estado' => 'Completo']);
+                }
+            });
     }
 
     public function eliminarTodos(Request $request)
@@ -218,6 +262,7 @@ class AsientoController extends Controller
         }
 
         $eliminados = Asiento::where('aeronave_id', $aeronave_id)->delete();
+        Aeronave::where('id', $aeronave_id)->update(['capacidad_total' => 0]);
 
         return redirect()->route('operador.asientos.index', ['aeronave_id' => $aeronave_id])
             ->with('success', "{$eliminados} asientos eliminados exitosamente.");

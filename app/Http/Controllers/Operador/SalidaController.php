@@ -15,18 +15,18 @@ class SalidaController extends Controller
     public function index(Request $request)
     {
         // Vuelos elegibles para salida (estado Completo = todos los asientos vendidos)
-        $vuelosElegibles = ProgramacionVuelo::with(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave'])
+        $vuelosElegibles = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino', 'aeronave'])
             ->where('estado', 'Completo')
             ->whereDoesntHave('salida')
             ->orderBy('fecha_salida')
             ->get();
 
         // Historial de salidas registradas
-        $query = Salida::with(['programacionVuelo.vuelo', 'programacionVuelo.ruta.aeropuertoOrigen', 'programacionVuelo.ruta.aeropuertoDestino', 'ingreso']);
+        $query = Salida::with(['programacionVuelo.aeropuertoOrigen', 'programacionVuelo.aeropuertoDestino', 'ingreso']);
 
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
-            $query->whereHas('programacionVuelo.vuelo', function ($q) use ($buscar) {
+            $query->whereHas('programacionVuelo', function ($q) use ($buscar) {
                 $q->where('codigo_vuelo', 'like', "%{$buscar}%");
             });
         }
@@ -95,14 +95,13 @@ class SalidaController extends Controller
     public function show(Salida $salida)
     {
         $salida->load([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
             'programacionVuelo.aeronave',
             'ingreso'
         ]);
 
-        $ventas = Venta::with(['cliente', 'asiento.tipoClase', 'ticket'])
+        $ventas = Venta::with(['cliente', 'tickets.asiento.tipoClase'])
             ->where('programacion_vuelo_id', $salida->programacion_vuelo_id)
             ->where('estado', 'Confirmada')
             ->get();

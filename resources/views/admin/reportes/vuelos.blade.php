@@ -180,12 +180,12 @@
                 <tbody>
                     @forelse($programaciones as $p)
                     <tr>
-                        <td><strong style="color:var(--accent)">{{ $p->vuelo->codigo_vuelo }}</strong></td>
+                        <td><strong style="color:var(--accent)">{{ $p->codigo_vuelo }}</strong></td>
                         <td>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="iata-badge">{{ $p->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $p->aeropuertoOrigen->codigo_IATA }}</span>
                                 <i class="bi bi-arrow-right text-muted small"></i>
-                                <span class="iata-badge">{{ $p->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $p->aeropuertoDestino->codigo_IATA }}</span>
                             </div>
                         </td>
                         <td>{{ $p->aeronave->matricula }}</td>

@@ -264,7 +264,7 @@
                                     <option value="">Seleccione ciudad de origen</option>
                                     @foreach($aeropuertos as $ap)
                                         <option value="{{ $ap->id }}" {{ old('origen') == $ap->id ? 'selected' : '' }}>
-                                            {{ $ap->ciudad }} — {{ $ap->codigo_iata }}
+                                            {{ $ap->ciudad }} — {{ $ap->codigo_IATA }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -280,7 +280,7 @@
                                     <option value="">Seleccione ciudad de destino</option>
                                     @foreach($aeropuertos as $ap)
                                         <option value="{{ $ap->id }}" {{ old('destino') == $ap->id ? 'selected' : '' }}>
-                                            {{ $ap->ciudad }} — {{ $ap->codigo_iata }}
+                                            {{ $ap->ciudad }} — {{ $ap->codigo_IATA }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -320,10 +320,10 @@
             <h2 class="fw-bold mb-0">
                 <i class="bi bi-airplane me-2" style="color:var(--accent)"></i>Vuelos disponibles
             </h2>
-            <span class="badge bg-primary fs-6">{{ $vuelos->count() }}</span>
+            <span class="badge bg-primary fs-6">{{ $vuelos->count() + $resultadosParciales->count() }}</span>
         </div>
 
-        @if($vuelos->isEmpty())
+        @if($vuelos->isEmpty() && $resultadosParciales->isEmpty())
             <div class="alert alert-warning d-flex align-items-center gap-3">
                 <i class="bi bi-exclamation-triangle fs-4"></i>
                 <div>
@@ -331,55 +331,82 @@
                 </div>
             </div>
         @else
-            <div class="row g-3">
+
+            {{-- Vuelos de ruta completa --}}
+            @if($vuelos->isNotEmpty())
+            <h5 class="fw-semibold mb-3 text-muted">
+                <i class="bi bi-arrow-right-circle me-1" style="color:var(--accent)"></i>Vuelo directo
+            </h5>
+            <div class="row g-3 mb-4">
                 @foreach($vuelos as $vuelo)
+                @php
+                    $subTramos    = $vuelo->rutaTramo?->tramo?->subTramos->sortBy('orden') ?? collect();
+                    $tieneEscalas = $subTramos->count() > 0;
+                    $disp         = $vuelo->asientos_disponibles ?? 0;
+                    $precioMin    = $vuelo->precios->min('precio') ?? $vuelo->precio_base;
+                    $duracionTotal = $vuelo->rutaTramo?->tramo?->duracion_estimada;
+                @endphp
                 <div class="col-12">
                     <div class="card vuelo-card shadow-sm">
                         <div class="card-body py-3">
                             <div class="row align-items-center g-3">
-                                {{-- Número de vuelo --}}
+                                {{-- Código y tipo --}}
                                 <div class="col-md-2">
                                     <div class="text-muted small mb-1">Vuelo</div>
-                                    <div class="fw-bold fs-5">{{ $vuelo->vuelo->numero_vuelo ?? 'N/A' }}</div>
-                                    <div class="text-muted small">{{ $vuelo->aeronave->modelo ?? '' }}</div>
+                                    <div class="fw-bold fs-5">{{ $vuelo->codigo_vuelo }}</div>
+                                    @if($tieneEscalas)
+                                        <span class="badge bg-warning text-dark" style="font-size:0.7rem">{{ $subTramos->count() }} escala(s)</span>
+                                    @else
+                                        <span class="badge bg-success" style="font-size:0.7rem">Directo</span>
+                                    @endif
+                                    @if($duracionTotal)
+                                        <div class="text-muted mt-1" style="font-size:.68rem"><i class="bi bi-clock me-1"></i>{{ substr($duracionTotal,0,5) }}</div>
+                                    @endif
                                 </div>
-                                {{-- Ruta --}}
+
+                                {{-- Ruta con escalas intermedias --}}
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center gap-2">
-                                        <div class="text-center">
+                                        <div class="text-center flex-shrink-0">
                                             <div class="fw-bold fs-4">{{ \Carbon\Carbon::parse($vuelo->hora_salida)->format('H:i') }}</div>
-                                            <div class="badge" style="background:var(--accent);font-size:0.75rem;">
-                                                {{ $vuelo->ruta->aeropuertoOrigen->codigo_iata ?? '' }}
-                                            </div>
-                                            <div class="text-muted x-small mt-1" style="font-size:0.7rem;">
-                                                {{ $vuelo->ruta->aeropuertoOrigen->ciudad ?? '' }}
-                                            </div>
+                                            <div class="badge" style="background:var(--accent);font-size:0.75rem;">{{ $vuelo->aeropuertoOrigen->codigo_IATA }}</div>
+                                            <div class="text-muted mt-1" style="font-size:0.7rem;">{{ $vuelo->aeropuertoOrigen->ciudad }}</div>
                                         </div>
-                                        <div class="ruta-linea">
-                                            <i class="bi bi-airplane fs-5"></i>
-                                        </div>
-                                        <div class="text-center">
+
+                                        @if($tieneEscalas)
+                                            {{-- Mostrar paradas intermedias --}}
+                                            @foreach($subTramos as $st)
+                                            <div class="ruta-linea" style="min-width:20px"></div>
+                                            <div class="text-center flex-shrink-0">
+                                                <div class="badge bg-warning text-dark" style="font-size:.72rem">{{ $st->aeropuertoDestino->codigo_IATA }}</div>
+                                                @if($st->tiempo_escala && !$loop->last)
+                                                <div style="font-size:.62rem;color:#856404;white-space:nowrap">
+                                                    <i class="bi bi-hourglass-split"></i> {{ substr($st->tiempo_escala,0,5) }}
+                                                </div>
+                                                @endif
+                                            </div>
+                                            @endforeach
+                                            <div class="ruta-linea" style="min-width:20px"><i class="bi bi-airplane fs-5"></i></div>
+                                        @else
+                                            <div class="ruta-linea"><i class="bi bi-airplane fs-5"></i></div>
+                                        @endif
+
+                                        <div class="text-center flex-shrink-0">
                                             <div class="fw-bold fs-4">{{ \Carbon\Carbon::parse($vuelo->hora_llegada)->format('H:i') }}</div>
-                                            <div class="badge" style="background:var(--accent);font-size:0.75rem;">
-                                                {{ $vuelo->ruta->aeropuertoDestino->codigo_iata ?? '' }}
-                                            </div>
-                                            <div class="text-muted mt-1" style="font-size:0.7rem;">
-                                                {{ $vuelo->ruta->aeropuertoDestino->ciudad ?? '' }}
-                                            </div>
+                                            <div class="badge" style="background:var(--accent);font-size:0.75rem;">{{ $vuelo->aeropuertoDestino->codigo_IATA }}</div>
+                                            <div class="text-muted mt-1" style="font-size:0.7rem;">{{ $vuelo->aeropuertoDestino->ciudad }}</div>
                                         </div>
                                     </div>
                                 </div>
-                                {{-- Fecha --}}
+
                                 <div class="col-md-1 text-center d-none d-md-block">
                                     <div class="text-muted small">Fecha</div>
                                     <div class="fw-semibold small">{{ \Carbon\Carbon::parse($vuelo->fecha_salida)->format('d M') }}</div>
                                 </div>
-                                {{-- Asientos --}}
+
                                 <div class="col-md-2 text-center">
-                                    @php $disp = $vuelo->asientos_disponibles ?? 0; @endphp
                                     <div class="text-muted small mb-1">Asientos</div>
-                                    <span class="asientos-badge
-                                        {{ $disp > 5 ? 'bg-success' : ($disp > 0 ? 'bg-warning text-dark' : 'bg-danger') }} text-white">
+                                    <span class="asientos-badge {{ $disp > 5 ? 'bg-success' : ($disp > 0 ? 'bg-warning text-dark' : 'bg-danger') }} text-white">
                                         @if($disp > 0)
                                             <i class="bi bi-chair me-1"></i>{{ $disp }}
                                         @else
@@ -387,25 +414,294 @@
                                         @endif
                                     </span>
                                 </div>
-                                {{-- Precio + acción --}}
+
                                 <div class="col-md-2 text-end">
                                     <div class="text-muted small mb-1">Desde</div>
-                                    <div class="precio-vuelo mb-2">Bs. {{ number_format($vuelo->precio_base, 2) }}</div>
+                                    <div class="precio-vuelo mb-1">Bs. {{ number_format($precioMin, 2) }}</div>
+                                    @if($tieneEscalas)
+                                    <button type="button" class="btn btn-outline-secondary btn-sm mb-1 w-100"
+                                            data-bs-toggle="modal" data-bs-target="#modal-w-{{ $vuelo->id }}">
+                                        <i class="bi bi-info-circle me-1"></i>Ver escala
+                                    </button>
+                                    @endif
                                     @if($disp > 0)
-                                        <a href="{{ route('welcome.seleccionar', $vuelo) }}"
-                                            class="btn btn-primary btn-sm fw-semibold px-3">
+                                        <a href="{{ route('welcome.seleccionar', $vuelo) }}" class="btn btn-primary btn-sm fw-semibold px-3 w-100">
                                             Seleccionar <i class="bi bi-arrow-right ms-1"></i>
                                         </a>
                                     @else
-                                        <button class="btn btn-secondary btn-sm" disabled>Agotado</button>
+                                        <button class="btn btn-secondary btn-sm w-100" disabled>Agotado</button>
                                     @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {{-- Modal detalle escalas --}}
+                @if($tieneEscalas)
+                <div class="modal fade" id="modal-w-{{ $vuelo->id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background:var(--accent);color:#fff">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-airplane me-2"></i>{{ $vuelo->codigo_vuelo }}
+                                    — {{ $vuelo->aeropuertoOrigen->codigo_IATA }} → {{ $vuelo->aeropuertoDestino->codigo_IATA }}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex justify-content-between text-muted small mb-3">
+                                    <span><i class="bi bi-calendar me-1"></i>{{ $vuelo->fecha_salida }}</span>
+                                    @if($duracionTotal)
+                                    <span><i class="bi bi-clock me-1"></i>Duración total: <strong>{{ substr($duracionTotal,0,5) }}</strong></span>
+                                    @endif
+                                </div>
+
+                                <div class="position-relative ps-3">
+                                    <div class="position-absolute start-0 top-0 bottom-0" style="width:2px;background:#dee2e6;left:11px"></div>
+                                    @foreach($subTramos as $st)
+                                    <div class="d-flex gap-3 mb-3 position-relative">
+                                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle text-white"
+                                             style="width:22px;height:22px;font-size:.7rem;z-index:1;background:var(--accent)">
+                                            {{ $loop->iteration }}
+                                        </div>
+                                        <div class="flex-grow-1 bg-light rounded p-2">
+                                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                                                <div>
+                                                    <span class="fw-bold">{{ $st->aeropuertoOrigen->codigo_IATA }}</span>
+                                                    <span class="text-muted ms-1 small">{{ $st->aeropuertoOrigen->ciudad }}</span>
+                                                    <i class="bi bi-arrow-right mx-1" style="color:var(--accent)"></i>
+                                                    <span class="fw-bold">{{ $st->aeropuertoDestino->codigo_IATA }}</span>
+                                                    <span class="text-muted ms-1 small">{{ $st->aeropuertoDestino->ciudad }}</span>
+                                                </div>
+                                                <span class="badge" style="background:var(--accent)">
+                                                    <i class="bi bi-airplane me-1"></i>{{ substr($st->duracion_estimada,0,5) }}
+                                                </span>
+                                            </div>
+                                            @if($st->tiempo_escala && !$loop->last)
+                                            <div class="mt-1">
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-hourglass-split me-1"></i>Escala en {{ $st->aeropuertoDestino->ciudad }}: {{ substr($st->tiempo_escala,0,5) }}
+                                                </span>
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                    <div class="d-flex gap-3 position-relative">
+                                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-success text-white rounded-circle"
+                                             style="width:22px;height:22px;font-size:.6rem;z-index:1">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+                                        <div class="text-success fw-semibold small pt-1">
+                                            Llegada: {{ $vuelo->aeropuertoDestino->codigo_IATA }} — {{ $vuelo->aeropuertoDestino->ciudad }}
+                                            · {{ \Carbon\Carbon::parse($vuelo->hora_llegada)->format('H:i') }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($vuelo->precios->count() > 0)
+                                <hr>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach($vuelo->precios->sortBy('precio') as $precio)
+                                    <span class="badge bg-light text-dark border">
+                                        {{ $precio->tipoClase->nombre ?? '—' }}: <strong>Bs. {{ number_format($precio->precio, 2) }}</strong>
+                                    </span>
+                                    @endforeach
+                                </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                                @if($disp > 0)
+                                <a href="{{ route('welcome.seleccionar', $vuelo) }}" class="btn btn-primary btn-sm fw-semibold">
+                                    Seleccionar asiento <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
                 @endforeach
             </div>
+            @endif
+
+            {{-- Vuelos con tramo parcial --}}
+            @if($resultadosParciales->isNotEmpty())
+            <h5 class="fw-semibold mb-3 text-muted">
+                <i class="bi bi-signpost-split me-1" style="color:var(--accent)"></i>Tramo parcial (con escala)
+            </h5>
+            <div class="row g-3">
+                @foreach($resultadosParciales as $ri => $item)
+                @php
+                    $vuelo         = $item['programacion'];
+                    $st            = $item['sub_tramo'];
+                    $disp          = $vuelo->asientos_disponibles ?? 0;
+                    $precioMinP    = $vuelo->precios->min('precio') ?? $vuelo->precio_base;
+                    $todosSubTramos = $vuelo->rutaTramo?->tramo?->subTramos->sortBy('orden') ?? collect();
+                @endphp
+                <div class="col-12">
+                    <div class="card vuelo-card shadow-sm" style="border-left-color:#fd7e14;">
+                        <div class="card-body py-3">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-2">
+                                    <div class="text-muted small mb-1">Vuelo</div>
+                                    <div class="fw-bold fs-5">{{ $vuelo->codigo_vuelo }}</div>
+                                    <span class="badge bg-warning text-dark" style="font-size:0.7rem">Tramo parcial</span>
+                                    <div class="text-muted mt-1" style="font-size:.65rem">
+                                        Vuelo completo:<br>{{ $vuelo->aeropuertoOrigen->codigo_IATA }} → {{ $vuelo->aeropuertoDestino->codigo_IATA }}
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="text-center flex-shrink-0">
+                                            <div class="fw-bold fs-4">{{ \Carbon\Carbon::parse($vuelo->hora_salida)->format('H:i') }}</div>
+                                            <div class="badge" style="background:#fd7e14;font-size:0.75rem;">{{ $st->aeropuertoOrigen->codigo_IATA }}</div>
+                                            <div class="text-muted mt-1" style="font-size:0.7rem;">{{ $st->aeropuertoOrigen->ciudad }}</div>
+                                        </div>
+                                        <div class="ruta-linea"><i class="bi bi-airplane fs-5" style="color:#fd7e14"></i></div>
+                                        <div class="text-center flex-shrink-0">
+                                            <div class="fw-bold fs-4">—</div>
+                                            <div class="badge" style="background:#fd7e14;font-size:0.75rem;">{{ $st->aeropuertoDestino->codigo_IATA }}</div>
+                                            <div class="text-muted mt-1" style="font-size:0.7rem;">{{ $st->aeropuertoDestino->ciudad }}</div>
+                                        </div>
+                                    </div>
+                                    @if($st->duracion_estimada)
+                                    <div class="text-muted mt-1" style="font-size:.7rem">
+                                        <i class="bi bi-clock me-1"></i>Duración del tramo: {{ substr($st->duracion_estimada,0,5) }}
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="col-md-1 text-center d-none d-md-block">
+                                    <div class="text-muted small">Fecha</div>
+                                    <div class="fw-semibold small">{{ \Carbon\Carbon::parse($vuelo->fecha_salida)->format('d M') }}</div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <div class="text-muted small mb-1">Asientos</div>
+                                    <span class="asientos-badge {{ $disp > 5 ? 'bg-success' : ($disp > 0 ? 'bg-warning text-dark' : 'bg-danger') }} text-white">
+                                        @if($disp > 0)
+                                            <i class="bi bi-chair me-1"></i>{{ $disp }}
+                                        @else
+                                            <i class="bi bi-x-circle me-1"></i>Agotado
+                                        @endif
+                                    </span>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <div class="text-muted small mb-1">Desde</div>
+                                    <div class="precio-vuelo mb-1">Bs. {{ number_format($precioMinP, 2) }}</div>
+                                    <button type="button" class="btn btn-outline-warning btn-sm mb-1 w-100 text-dark"
+                                            data-bs-toggle="modal" data-bs-target="#modal-wp-{{ $ri }}">
+                                        <i class="bi bi-info-circle me-1"></i>Ver detalle
+                                    </button>
+                                    @if($disp > 0)
+                                        <a href="{{ route('welcome.seleccionar', $vuelo) }}?sub_tramo_id={{ $st->id }}"
+                                           class="btn btn-warning btn-sm fw-semibold px-3 text-dark w-100">
+                                            Seleccionar <i class="bi bi-arrow-right ms-1"></i>
+                                        </a>
+                                    @else
+                                        <button class="btn btn-secondary btn-sm w-100" disabled>Agotado</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Modal detalle tramo parcial --}}
+                <div class="modal fade" id="modal-wp-{{ $ri }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-signpost-split me-2"></i>Tramo {{ $st->aeropuertoOrigen->codigo_IATA }} → {{ $st->aeropuertoDestino->codigo_IATA }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-warning py-2 mb-3" style="font-size:.85rem">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Reserva <strong>solo el tramo {{ $st->aeropuertoOrigen->codigo_IATA }} → {{ $st->aeropuertoDestino->codigo_IATA }}</strong>
+                                    del vuelo <strong>{{ $vuelo->codigo_vuelo }}</strong>
+                                    (ruta completa: {{ $vuelo->aeropuertoOrigen->codigo_IATA }} → {{ $vuelo->aeropuertoDestino->codigo_IATA }}).
+                                </div>
+
+                                <p class="text-muted small fw-semibold mb-2">Ruta completa del vuelo:</p>
+                                <div class="position-relative ps-3">
+                                    <div class="position-absolute start-0 top-0 bottom-0" style="width:2px;background:#dee2e6;left:11px"></div>
+                                    @foreach($todosSubTramos as $tramo)
+                                    @php $esElegido = $tramo->id === $st->id; @endphp
+                                    <div class="d-flex gap-3 mb-3 position-relative">
+                                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle"
+                                             style="width:22px;height:22px;font-size:.7rem;z-index:1;background:{{ $esElegido ? '#ffc107' : '#6c757d' }};color:{{ $esElegido ? '#000' : '#fff' }}">
+                                            {{ $loop->iteration }}
+                                        </div>
+                                        <div class="flex-grow-1 rounded p-2 {{ $esElegido ? 'border border-warning' : 'bg-light' }}" style="{{ $esElegido ? 'background:rgba(255,193,7,.15)' : '' }}">
+                                            <div class="d-flex justify-content-between align-items-start flex-wrap gap-1">
+                                                <div>
+                                                    <span class="fw-bold">{{ $tramo->aeropuertoOrigen->codigo_IATA }}</span>
+                                                    <span class="text-muted ms-1 small">{{ $tramo->aeropuertoOrigen->ciudad }}</span>
+                                                    <i class="bi bi-arrow-right mx-1"></i>
+                                                    <span class="fw-bold">{{ $tramo->aeropuertoDestino->codigo_IATA }}</span>
+                                                    <span class="text-muted ms-1 small">{{ $tramo->aeropuertoDestino->ciudad }}</span>
+                                                </div>
+                                                <span class="badge {{ $esElegido ? 'bg-warning text-dark' : 'bg-secondary' }}">
+                                                    <i class="bi bi-airplane me-1"></i>{{ substr($tramo->duracion_estimada,0,5) }}
+                                                </span>
+                                            </div>
+                                            @if($esElegido)
+                                            <div class="mt-1">
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-check-circle me-1"></i>Su tramo</span>
+                                            </div>
+                                            @endif
+                                            @if($tramo->tiempo_escala && !$loop->last)
+                                            <div class="mt-1">
+                                                <span class="badge bg-light text-dark border">
+                                                    <i class="bi bi-hourglass-split me-1"></i>Escala en {{ $tramo->aeropuertoDestino->ciudad }}: {{ substr($tramo->tiempo_escala,0,5) }}
+                                                </span>
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                    <div class="d-flex gap-3 position-relative">
+                                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-success text-white rounded-circle"
+                                             style="width:22px;height:22px;font-size:.6rem;z-index:1">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+                                        <div class="text-success fw-semibold small pt-1">
+                                            Destino final: {{ $vuelo->aeropuertoDestino->codigo_IATA }} — {{ $vuelo->aeropuertoDestino->ciudad }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if($vuelo->precios->count() > 0)
+                                <hr>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach($vuelo->precios->sortBy('precio') as $precio)
+                                    <span class="badge bg-light text-dark border">
+                                        {{ $precio->tipoClase->nombre ?? '—' }}: <strong>Bs. {{ number_format($precio->precio, 2) }}</strong>
+                                    </span>
+                                    @endforeach
+                                </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                                @if($disp > 0)
+                                <a href="{{ route('welcome.seleccionar', $vuelo) }}?sub_tramo_id={{ $st->id }}"
+                                   class="btn btn-warning btn-sm fw-semibold text-dark">
+                                    Seleccionar este tramo <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+
         @endif
     </div>
 </section>

@@ -72,6 +72,9 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                <a href="{{ route('operador.rutas.show', $ruta) }}" class="btn btn-sm btn-info" title="Ver tramos">
+                                    <i class="bi bi-diagram-3"></i>
+                                </a>
                                 <a href="{{ route('operador.rutas.edit', $ruta) }}" class="btn btn-sm btn-warning" title="Editar">
                                     <i class="bi bi-pencil"></i>
                                 </a>

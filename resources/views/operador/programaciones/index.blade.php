@@ -63,21 +63,12 @@
                         <tr>
                             <td>{{ $prog->id }}</td>
                             <td>
-                                <strong class="text-primary">{{ $prog->vuelo->codigo_vuelo }}</strong>
-                                @if($prog->vuelo->vuelo_padre_id)
-                                    <br><small class="text-warning">
-                                        <i class="bi bi-diagram-3"></i> Escala de {{ $prog->vuelo->vueloPadre->codigo_vuelo }}
-                                    </small>
-                                @elseif($prog->vuelo->tipo === 'ConEscalas')
-                                    <br><small class="text-info">
-                                        <i class="bi bi-diagram-3"></i> Vuelo con escalas
-                                    </small>
-                                @endif
+                                <strong class="text-primary">{{ $prog->codigo_vuelo }}</strong>
                             </td>
                             <td>
-                                {{ $prog->ruta->aeropuertoOrigen->codigo_IATA }}
+                                {{ $prog->aeropuertoOrigen->codigo_IATA }}
                                 <i class="bi bi-arrow-right text-primary"></i>
-                                {{ $prog->ruta->aeropuertoDestino->codigo_IATA }}
+                                {{ $prog->aeropuertoDestino->codigo_IATA }}
                             </td>
                             <td>{{ $prog->aeronave->matricula }}</td>
                             <td>
@@ -102,6 +93,11 @@
                                 <a href="{{ route('operador.programaciones.show', $prog) }}" class="btn btn-sm btn-info" title="Ver detalle">
                                     <i class="bi bi-eye"></i>
                                 </a>
+                                @if($prog->estado !== 'Salido')
+                                <a href="{{ route('operador.programaciones.reprogramar', $prog) }}" class="btn btn-sm btn-secondary" title="Reprogramar">
+                                    <i class="bi bi-calendar-check"></i>
+                                </a>
+                                @endif
                                 @if($prog->estado === 'Programado')
                                 <a href="{{ route('operador.programaciones.edit', $prog) }}" class="btn btn-sm btn-warning" title="Editar">
                                     <i class="bi bi-pencil"></i>

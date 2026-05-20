@@ -37,9 +37,9 @@
 </li>
 @endif
 
-@if($permisosUsuario->contains('aeropuertos') || $permisosUsuario->contains('tipo_clases') || $permisosUsuario->contains('aeronaves') || $permisosUsuario->contains('asientos') || $permisosUsuario->contains('rutas') || $permisosUsuario->contains('vuelos') || $permisosUsuario->contains('programacion_vuelos'))
+@if($permisosUsuario->contains('aeropuertos') || $permisosUsuario->contains('tipo_clases') || $permisosUsuario->contains('aeronaves') || $permisosUsuario->contains('asientos') || $permisosUsuario->contains('rutas') || $permisosUsuario->contains('tramos') || $permisosUsuario->contains('programacion_vuelos'))
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle {{ request()->routeIs('operador.aeropuertos.*') || request()->routeIs('operador.tipo-clases.*') || request()->routeIs('operador.aeronaves.*') || request()->routeIs('operador.asientos.*') || request()->routeIs('operador.rutas.*') || request()->routeIs('operador.vuelos.*') || request()->routeIs('operador.programaciones.*') ? 'active' : '' }}"
+    <a class="nav-link dropdown-toggle {{ request()->routeIs('operador.aeropuertos.*') || request()->routeIs('operador.tipo-clases.*') || request()->routeIs('operador.aeronaves.*') || request()->routeIs('operador.asientos.*') || request()->routeIs('operador.rutas.*') || request()->routeIs('operador.tramos.*') || request()->routeIs('operador.programaciones.*') ? 'active' : '' }}"
        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-airplane"></i> Programación de Vuelos
     </a>
@@ -79,14 +79,14 @@
             </a>
         </li>
         @endif
-        @if($permisosUsuario->contains('vuelos'))
+        @if($permisosUsuario->contains('tramos'))
         <li>
-            <a class="dropdown-item {{ request()->routeIs('operador.vuelos.*') ? 'active' : '' }}" href="{{ route('operador.vuelos.index') }}">
-                <i class="bi bi-airplane"></i> Vuelos
+            <a class="dropdown-item {{ request()->routeIs('operador.tramos.*') ? 'active' : '' }}" href="{{ route('operador.tramos.index') }}">
+                <i class="bi bi-diagram-3"></i> Tramos
             </a>
         </li>
         @endif
-        @if($permisosUsuario->contains('programacion_vuelos'))
+@if($permisosUsuario->contains('programacion_vuelos'))
         <li>
             <a class="dropdown-item {{ request()->routeIs('operador.programaciones.*') ? 'active' : '' }}" href="{{ route('operador.programaciones.index') }}">
                 <i class="bi bi-calendar3"></i> Programación
@@ -195,14 +195,14 @@
 </li>
 @endif
 
-@if($permisosUsuario->contains('reservas') || $permisosUsuario->contains('ventas') || $permisosUsuario->contains('tickets'))
+@if($permisosUsuario->contains('reservas') || $permisosUsuario->contains('compras') || $permisosUsuario->contains('tickets'))
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle {{ request()->routeIs('cliente.buscar*') || request()->routeIs('cliente.mis.*') ? 'active' : '' }}"
        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-ticket-perforated"></i> Pasajes
     </a>
     <ul class="dropdown-menu">
-        @if($permisosUsuario->contains('reservas') || $permisosUsuario->contains('ventas'))
+        @if($permisosUsuario->contains('reservas'))
         <li>
             <a class="dropdown-item {{ request()->routeIs('cliente.buscar*') ? 'active' : '' }}" href="{{ route('cliente.buscar') }}">
                 <i class="bi bi-search"></i> Buscar Vuelos
@@ -216,7 +216,7 @@
             </a>
         </li>
         @endif
-        @if($permisosUsuario->contains('ventas'))
+        @if($permisosUsuario->contains('compras'))
         <li>
             <a class="dropdown-item {{ request()->routeIs('cliente.mis.compras') ? 'active' : '' }}" href="{{ route('cliente.mis.compras') }}">
                 <i class="bi bi-cart-check"></i> Mis Compras

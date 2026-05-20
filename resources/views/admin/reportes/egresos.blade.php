@@ -133,7 +133,7 @@
                         <td class="text-muted small">{{ $egreso->id }}</td>
                         <td><strong style="color:var(--accent)">{{ $egreso->devolucion->venta->codigo_venta }}</strong></td>
                         <td>{{ $egreso->devolucion->cliente->nombre }} {{ $egreso->devolucion->cliente->apellido }}</td>
-                        <td>{{ $egreso->devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
+                        <td>{{ $egreso->devolucion->venta->programacionVuelo->codigo_vuelo }}</td>
                         <td class="small text-muted">{{ Str::limit($egreso->devolucion->motivo, 40) }}</td>
                         <td class="text-end fw-bold" style="color:#dc3545">
                             Bs. {{ number_format($egreso->monto_devuelto, 2) }}

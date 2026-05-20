@@ -26,31 +26,42 @@
                 </ul>
                 <form class="d-flex me-3" action="{{ route('buscar.info') }}" method="GET" role="search">
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" name="q" placeholder="Buscar vuelos, rutas, aeropuertos..." value="{{ request('q') }}" style="min-width: 250px;">
+                        <input type="text" class="form-control" name="q" placeholder="Buscar..." value="{{ request('q') }}" style="width: 150px;">
                         <button class="btn btn-light" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
                 </form>
                 <ul class="navbar-nav align-items-center">
-                    {{-- Selector de Tema --}}
-                    <li class="nav-item me-3">
-                        <div class="tema-selector">
-                            <button class="tema-btn tema-adultos active" data-tema="adultos" title="Tema Adultos"></button>
-                            <button class="tema-btn tema-ninos" data-tema="ninos" title="Tema Niños"></button>
-                            <button class="tema-btn tema-jovenes" data-tema="jovenes" title="Tema Jóvenes"></button>
-                            <span class="modo-toggle ms-2" id="modoToggle" title="Modo Día/Noche">
-                                <i class="bi bi-sun-fill" id="modoIcono"></i>
-                            </span>
-                        </div>
-                    </li>
                     {{-- Usuario --}}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button"
+                           data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                             <i class="bi bi-person-circle"></i> {{ Auth::user()->nombre }} {{ Auth::user()->apellido }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><span class="dropdown-item-text text-muted">{{ Auth::user()->rol->nombre }}</span></li>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 220px;">
+                            <li><span class="dropdown-item-text fw-semibold">{{ Auth::user()->nombre }} {{ Auth::user()->apellido }}</span></li>
+                            <li><span class="dropdown-item-text text-muted small">{{ Auth::user()->rol->nombre }}</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <span class="dropdown-item-text small text-muted">
+                                    <i class="bi bi-palette me-1"></i>Apariencia
+                                </span>
+                            </li>
+                            <li>
+                                <div class="px-3 py-1 d-flex align-items-center gap-2">
+                                    <button class="tema-btn tema-adultos" data-tema="adultos" title="Adultos"></button>
+                                    <button class="tema-btn tema-ninos"   data-tema="ninos"   title="Niños"></button>
+                                    <button class="tema-btn tema-jovenes" data-tema="jovenes" title="Jóvenes"></button>
+                                    <span class="ms-1 text-muted small">Color</span>
+                                </div>
+                            </li>
+                            <li>
+                                <button class="dropdown-item d-flex align-items-center gap-2" id="modoToggle" type="button">
+                                    <i class="bi bi-sun-fill" id="modoIcono"></i>
+                                    <span id="modoTexto">Modo Día</span>
+                                </button>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
@@ -117,6 +128,7 @@
         function aplicarModo(modo) {
             document.documentElement.setAttribute('data-modo', modo);
             const icono = document.getElementById('modoIcono');
+            const texto = document.getElementById('modoTexto');
             if (icono) {
                 if (modo === 'noche') {
                     icono.classList.replace('bi-sun-fill', 'bi-moon-fill');
@@ -124,6 +136,7 @@
                     icono.classList.replace('bi-moon-fill', 'bi-sun-fill');
                 }
             }
+            if (texto) texto.textContent = modo === 'noche' ? 'Modo Noche' : 'Modo Día';
         }
 
         aplicarModo(detectarModo());

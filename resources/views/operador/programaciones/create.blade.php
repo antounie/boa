@@ -19,43 +19,33 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="vuelo_id" class="form-label">Vuelo</label>
-                            <select class="form-select @error('vuelo_id') is-invalid @enderror"
-                                    id="vuelo_id" name="vuelo_id" required>
-                                <option value="">Seleccionar vuelo...</option>
-                                @foreach($vuelos as $vuelo)
-                                    <option value="{{ $vuelo->id }}"
-                                            data-tipo="{{ $vuelo->tipo }}"
-                                            data-es-hijo="{{ $vuelo->vuelo_padre_id ? 'true' : 'false' }}"
-                                            {{ old('vuelo_id') == $vuelo->id ? 'selected' : '' }}>
-                                        {{ $vuelo->codigo_vuelo }}
-                                        @if($vuelo->vuelo_padre_id)
-                                            (Tramo de {{ $vuelo->vueloPadre->codigo_vuelo }})
-                                        @elseif($vuelo->tipo === 'ConEscalas')
-                                            (Con Escalas)
-                                        @else
-                                            (Directo)
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('vuelo_id')
+                            <label for="codigo_vuelo" class="form-label">Código de Vuelo</label>
+                            <input type="text" class="form-control @error('codigo_vuelo') is-invalid @enderror"
+                                   id="codigo_vuelo" name="codigo_vuelo"
+                                   value="{{ old('codigo_vuelo') }}"
+                                   placeholder="Ej: OB-300" required>
+                            @error('codigo_vuelo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-4">
-                            <label for="ruta_id" class="form-label">Ruta</label>
-                            <select class="form-select @error('ruta_id') is-invalid @enderror"
-                                    id="ruta_id" name="ruta_id" required>
-                                <option value="">Seleccionar ruta...</option>
-                                @foreach($rutas as $ruta)
-                                    <option value="{{ $ruta->id }}" {{ old('ruta_id') == $ruta->id ? 'selected' : '' }}>
-                                        {{ $ruta->aeropuertoOrigen->codigo_IATA }} → {{ $ruta->aeropuertoDestino->codigo_IATA }}
-                                        ({{ $ruta->aeropuertoOrigen->ciudad }} - {{ $ruta->aeropuertoDestino->ciudad }})
+                            <label for="ruta_tramo_id" class="form-label">Ruta / Tramo</label>
+                            <select class="form-select @error('ruta_tramo_id') is-invalid @enderror"
+                                    id="ruta_tramo_id" name="ruta_tramo_id" required>
+                                <option value="">Seleccionar ruta y tramo...</option>
+                                @foreach($rutaTramos as $rt)
+                                    <option value="{{ $rt->id }}"
+                                            data-duracion="{{ $rt->tramo->duracion_estimada }}"
+                                            {{ old('ruta_tramo_id') == $rt->id ? 'selected' : '' }}>
+                                        {{ $rt->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $rt->ruta->aeropuertoDestino->codigo_IATA }}
+                                        | Tramo {{ $rt->orden }}: {{ $rt->tramo->aeropuertoOrigen->codigo_IATA }} → {{ $rt->tramo->aeropuertoDestino->codigo_IATA }}
+                                        @if($rt->tramo->subTramos->count() > 0)
+                                            ({{ $rt->tramo->subTramos->count() }} escala(s))
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>
-                            @error('ruta_id')
+                            @error('ruta_tramo_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -100,7 +90,7 @@
                             @error('fecha_llegada')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted" id="msg_fecha_llegada">Se calcula automáticamente</small>
+                            <small class="text-muted">Se calcula automáticamente</small>
                         </div>
                         <div class="col-md-3">
                             <label for="hora_llegada" class="form-label">Hora Llegada</label>
@@ -109,22 +99,32 @@
                             @error('hora_llegada')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted" id="msg_hora_llegada">Se calcula automáticamente</small>
+                            <small class="text-muted">Se calcula automáticamente</small>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
+                    <hr>
+                    <h6 class="mb-3"><i class="bi bi-tag"></i> Precios por Clase</h6>
+                    @error('precios')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                    @enderror
+                    <div class="row g-3 mb-3">
+                        @foreach($tipoClases as $i => $tc)
                         <div class="col-md-4">
-                            <label for="precio_base" class="form-label">Precio Base (USD)</label>
+                            <label class="form-label fw-semibold">{{ $tc->nombre }}</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input type="number" step="0.01" class="form-control @error('precio_base') is-invalid @enderror"
-                                       id="precio_base" name="precio_base" value="{{ old('precio_base') }}" min="1" required>
-                                @error('precio_base')
+                                <input type="number" step="0.01" min="1"
+                                       class="form-control @error("precios.$i.precio") is-invalid @enderror"
+                                       name="precios[{{ $i }}][precio]"
+                                       value="{{ old("precios.$i.precio") }}" required>
+                                <input type="hidden" name="precios[{{ $i }}][tipo_clase_id]" value="{{ $tc->id }}">
+                                @error("precios.$i.precio")
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
+                        @endforeach
                     </div>
 
                     <hr>
@@ -145,156 +145,29 @@
 
 @push('scripts')
 <script>
-    const rutasDuracion = {
-        @foreach($rutas as $ruta)
-            '{{ $ruta->id }}': '{{ $ruta->duracion_estimada }}',
-        @endforeach
-    };
-
-    const horariosPadre = {
-        @foreach($horariosPadre as $id => $horario)
-            '{{ $id }}': {
-                fecha_salida: '{{ $horario['fecha_salida'] }}',
-                hora_salida: '{{ $horario['hora_salida'] }}',
-                fecha_llegada: '{{ $horario['fecha_llegada'] }}',
-                hora_llegada: '{{ $horario['hora_llegada'] }}',
-                aeronave_id: '{{ $horario['aeronave_id'] }}'
-            },
-        @endforeach
-    };
-
     function calcularLlegada() {
-        const rutaId = document.getElementById('ruta_id').value;
+        const rutaSelect = document.getElementById('ruta_tramo_id');
+        const selectedOption = rutaSelect.options[rutaSelect.selectedIndex];
+        const duracion = selectedOption ? selectedOption.getAttribute('data-duracion') : null;
         const fechaSalida = document.getElementById('fecha_salida').value;
         const horaSalida = document.getElementById('hora_salida').value;
 
-        if (rutaId && fechaSalida && horaSalida && rutasDuracion[rutaId]) {
-            const duracion = rutasDuracion[rutaId];
-            const partesDuracion = duracion.split(':');
-            const horasDuracion = parseInt(partesDuracion[0]);
-            const minutosDuracion = parseInt(partesDuracion[1]);
-
+        if (duracion && fechaSalida && horaSalida) {
+            const partes = duracion.split(':');
             const salida = new Date(fechaSalida + 'T' + horaSalida);
-            salida.setHours(salida.getHours() + horasDuracion);
-            salida.setMinutes(salida.getMinutes() + minutosDuracion);
+            salida.setHours(salida.getHours() + parseInt(partes[0]));
+            salida.setMinutes(salida.getMinutes() + parseInt(partes[1]));
 
-            const anio = salida.getFullYear();
-            const mes = String(salida.getMonth() + 1).padStart(2, '0');
-            const dia = String(salida.getDate()).padStart(2, '0');
-            const hora = String(salida.getHours()).padStart(2, '0');
-            const minuto = String(salida.getMinutes()).padStart(2, '0');
-
-            document.getElementById('fecha_llegada').value = `${anio}-${mes}-${dia}`;
-            document.getElementById('hora_llegada').value = `${hora}:${minuto}`;
+            document.getElementById('fecha_llegada').value =
+                `${salida.getFullYear()}-${String(salida.getMonth()+1).padStart(2,'0')}-${String(salida.getDate()).padStart(2,'0')}`;
+            document.getElementById('hora_llegada').value =
+                `${String(salida.getHours()).padStart(2,'0')}:${String(salida.getMinutes()).padStart(2,'0')}`;
         }
     }
 
-    function verificarTipoVuelo() {
-        const vueloSelect = document.getElementById('vuelo_id');
-        const selectedOption = vueloSelect.options[vueloSelect.selectedIndex];
-        const tipoVuelo = selectedOption ? selectedOption.getAttribute('data-tipo') : '';
-        const esHijo = selectedOption ? selectedOption.getAttribute('data-es-hijo') === 'true' : false;
-        const vueloId = vueloSelect.value;
-
-        const fechaSalida = document.getElementById('fecha_salida');
-        const horaSalida = document.getElementById('hora_salida');
-        const fechaLlegada = document.getElementById('fecha_llegada');
-        const horaLlegada = document.getElementById('hora_llegada');
-        const aeronaveSelect = document.getElementById('aeronave_id');
-        const msgFecha = document.getElementById('msg_fecha_llegada');
-        const msgHora = document.getElementById('msg_hora_llegada');
-
-        if (tipoVuelo === 'ConEscalas' && !esHijo) {
-            // Vuelo padre con escalas
-            if (horariosPadre[vueloId]) {
-                // Tiene tramos programados: llenar automáticamente y hacer readonly
-                const datos = horariosPadre[vueloId];
-                fechaSalida.value = datos.fecha_salida;
-                horaSalida.value = datos.hora_salida;
-                fechaLlegada.value = datos.fecha_llegada;
-                horaLlegada.value = datos.hora_llegada;
-                aeronaveSelect.value = datos.aeronave_id;
-
-                fechaSalida.setAttribute('readonly', true);
-                horaSalida.setAttribute('readonly', true);
-                fechaLlegada.setAttribute('readonly', true);
-                horaLlegada.setAttribute('readonly', true);
-                aeronaveSelect.setAttribute('disabled', true);
-
-                // Campo oculto para enviar aeronave_id cuando está disabled
-                let hiddenAeronave = document.getElementById('hidden_aeronave_id');
-                if (!hiddenAeronave) {
-                    hiddenAeronave = document.createElement('input');
-                    hiddenAeronave.type = 'hidden';
-                    hiddenAeronave.id = 'hidden_aeronave_id';
-                    hiddenAeronave.name = 'aeronave_id';
-                    aeronaveSelect.parentNode.appendChild(hiddenAeronave);
-                }
-                hiddenAeronave.value = datos.aeronave_id;
-
-                msgFecha.textContent = 'Calculado desde los tramos de escala';
-                msgHora.textContent = 'Calculado desde los tramos de escala';
-            } else {
-                // No tiene tramos programados: campos editables
-                fechaSalida.removeAttribute('readonly');
-                horaSalida.removeAttribute('readonly');
-                fechaLlegada.removeAttribute('readonly');
-                horaLlegada.removeAttribute('readonly');
-                aeronaveSelect.removeAttribute('disabled');
-
-                let hiddenAeronave = document.getElementById('hidden_aeronave_id');
-                if (hiddenAeronave) hiddenAeronave.remove();
-
-                msgFecha.textContent = 'Ingrese considerando el tiempo total con escalas';
-                msgHora.textContent = 'Hora de llegada al destino final';
-            }
-        } else {
-            // Vuelo directo o tramo hijo: calculo automático
-            fechaSalida.removeAttribute('readonly');
-            horaSalida.removeAttribute('readonly');
-            fechaLlegada.setAttribute('readonly', true);
-            horaLlegada.setAttribute('readonly', true);
-            aeronaveSelect.removeAttribute('disabled');
-
-            let hiddenAeronave = document.getElementById('hidden_aeronave_id');
-            if (hiddenAeronave) hiddenAeronave.remove();
-
-            msgFecha.textContent = 'Se calcula automáticamente';
-            msgHora.textContent = 'Se calcula automáticamente';
-            calcularLlegada();
-        }
-    }
-
-    document.getElementById('vuelo_id').addEventListener('change', verificarTipoVuelo);
-    document.getElementById('ruta_id').addEventListener('change', function() {
-        const vueloSelect = document.getElementById('vuelo_id');
-        const selectedOption = vueloSelect.options[vueloSelect.selectedIndex];
-        const tipoVuelo = selectedOption ? selectedOption.getAttribute('data-tipo') : '';
-        const esHijo = selectedOption ? selectedOption.getAttribute('data-es-hijo') === 'true' : false;
-        if (tipoVuelo !== 'ConEscalas' || esHijo) {
-            calcularLlegada();
-        }
-    });
-    document.getElementById('fecha_salida').addEventListener('change', function() {
-        const vueloSelect = document.getElementById('vuelo_id');
-        const selectedOption = vueloSelect.options[vueloSelect.selectedIndex];
-        const tipoVuelo = selectedOption ? selectedOption.getAttribute('data-tipo') : '';
-        const esHijo = selectedOption ? selectedOption.getAttribute('data-es-hijo') === 'true' : false;
-        if (tipoVuelo !== 'ConEscalas' || esHijo) {
-            calcularLlegada();
-        }
-    });
-    document.getElementById('hora_salida').addEventListener('change', function() {
-        const vueloSelect = document.getElementById('vuelo_id');
-        const selectedOption = vueloSelect.options[vueloSelect.selectedIndex];
-        const tipoVuelo = selectedOption ? selectedOption.getAttribute('data-tipo') : '';
-        const esHijo = selectedOption ? selectedOption.getAttribute('data-es-hijo') === 'true' : false;
-        if (tipoVuelo !== 'ConEscalas' || esHijo) {
-            calcularLlegada();
-        }
-    });
-
-    verificarTipoVuelo();
+    document.getElementById('ruta_tramo_id').addEventListener('change', calcularLlegada);
+    document.getElementById('fecha_salida').addEventListener('change', calcularLlegada);
+    document.getElementById('hora_salida').addEventListener('change', calcularLlegada);
 </script>
 @endpush
 

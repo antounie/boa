@@ -26,7 +26,7 @@ class ReporteController extends Controller
     public function vuelos(Request $request)
     {
         $query = ProgramacionVuelo::with([
-            'vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave'
+            'aeropuertoOrigen', 'aeropuertoDestino', 'aeronave'
         ]);
 
         if ($request->filled('fecha_inicio')) {
@@ -62,7 +62,6 @@ class ReporteController extends Controller
             'vendidos'    => $programaciones->sum('asientos_vendidos'),
         ];
 
-        // Datos para gráfico: vuelos por mes
         $chart = $programaciones
             ->groupBy(fn($p) => Carbon::parse($p->fecha_salida)->format('M Y'))
             ->map(fn($g) => $g->count())
@@ -81,7 +80,7 @@ class ReporteController extends Controller
     public function vuelosPdf(Request $request)
     {
         $query = ProgramacionVuelo::with([
-            'vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave'
+            'aeropuertoOrigen', 'aeropuertoDestino', 'aeronave'
         ]);
         $this->applyVuelosFiltros($query, $request);
         $programaciones = $query->orderBy('fecha_salida', 'desc')->get();
@@ -104,10 +103,11 @@ class ReporteController extends Controller
     public function ventas(Request $request)
     {
         $query = Venta::with([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
-            'cliente', 'asiento.tipoClase'
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
+            'cliente',
+            'tickets.asiento.tipoClase',
+            'transacciones',
         ]);
 
         if ($request->filled('fecha_inicio')) {
@@ -120,12 +120,10 @@ class ReporteController extends Controller
             $query->where('estado', $request->estado);
         }
         if ($request->filled('metodo_pago')) {
-            $query->where('metodo_pago', $request->metodo_pago);
+            $query->whereHas('transacciones', fn($q) => $q->where('metodo_pago', $request->metodo_pago));
         }
         if ($request->filled('clase_id')) {
-            $query->whereHas('asiento', fn($q) =>
-                $q->where('tipo_clase_id', $request->clase_id)
-            );
+            $query->whereHas('tickets.asiento', fn($q) => $q->where('tipo_clase_id', $request->clase_id));
         }
         if ($request->filled('aeropuerto_origen')) {
             $query->whereHas('programacionVuelo.ruta', fn($q) =>
@@ -148,7 +146,6 @@ class ReporteController extends Controller
             'total'            => $ventas->count(),
         ];
 
-        // Datos gráfico: monto confirmadas vs canceladas por mes
         $meses = $ventas->groupBy(fn($v) => $v->created_at->format('M Y'))
             ->sortBy(fn($g, $k) => Carbon::parse($k)->timestamp);
         $chartLabels    = $meses->keys()->values()->toJson();
@@ -157,7 +154,7 @@ class ReporteController extends Controller
 
         $tipoClases  = TipoClase::orderBy('nombre')->get();
         $aeropuertos = Aeropuerto::orderBy('ciudad')->get();
-        $metodosPago = $ventas->pluck('metodo_pago')->unique()->filter()->sort()->values();
+        $metodosPago = ['QR', 'Efectivo', 'Tarjeta'];
 
         return view('admin.reportes.ventas', compact(
             'ventas','totales','tipoClases','aeropuertos','metodosPago',
@@ -168,10 +165,11 @@ class ReporteController extends Controller
     public function ventasPdf(Request $request)
     {
         $query = Venta::with([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
-            'cliente', 'asiento.tipoClase'
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
+            'cliente',
+            'tickets.asiento.tipoClase',
+            'transacciones',
         ]);
         $this->applyVentasFiltros($query, $request);
         $ventas = $query->orderBy('created_at', 'desc')->get();
@@ -194,9 +192,8 @@ class ReporteController extends Controller
     public function ingresos(Request $request)
     {
         $query = Ingreso::with([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino'
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino'
         ]);
 
         if ($request->filled('fecha_inicio')) {
@@ -225,7 +222,6 @@ class ReporteController extends Controller
             'promedio'     => $ingresos->count() > 0 ? $ingresos->avg('monto_total') : 0,
         ];
 
-        // Datos gráfico: monto por mes
         $chart = $ingresos
             ->groupBy(fn($i) => $i->created_at->format('M Y'))
             ->sortBy(fn($g, $k) => Carbon::parse($k)->timestamp);
@@ -242,9 +238,8 @@ class ReporteController extends Controller
     public function ingresosPdf(Request $request)
     {
         $query = Ingreso::with([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino'
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino'
         ]);
         if ($request->filled('fecha_inicio')) $query->whereDate('created_at', '>=', $request->fecha_inicio);
         if ($request->filled('fecha_fin'))    $query->whereDate('created_at', '<=', $request->fecha_fin);
@@ -267,7 +262,7 @@ class ReporteController extends Controller
     public function egresos(Request $request)
     {
         $query = Egreso::with([
-            'devolucion.venta.programacionVuelo.vuelo',
+            'devolucion.venta.programacionVuelo',
             'devolucion.cliente'
         ]);
 
@@ -286,7 +281,6 @@ class ReporteController extends Controller
             'promedio'    => $egresos->count() > 0 ? $egresos->avg('monto_devuelto') : 0,
         ];
 
-        // Datos gráfico: monto devuelto por mes
         $chart = $egresos
             ->groupBy(fn($e) => $e->created_at->format('M Y'))
             ->sortBy(fn($g, $k) => Carbon::parse($k)->timestamp);
@@ -299,7 +293,7 @@ class ReporteController extends Controller
     public function egresosPdf(Request $request)
     {
         $query = Egreso::with([
-            'devolucion.venta.programacionVuelo.vuelo',
+            'devolucion.venta.programacionVuelo',
             'devolucion.cliente'
         ]);
         if ($request->filled('fecha_inicio')) $query->whereDate('created_at', '>=', $request->fecha_inicio);
@@ -332,7 +326,7 @@ class ReporteController extends Controller
 
         switch ($tipo) {
             case 'vuelos':
-                $query = ProgramacionVuelo::with(['vuelo','ruta.aeropuertoOrigen','ruta.aeropuertoDestino','aeronave']);
+                $query = ProgramacionVuelo::with(['aeropuertoOrigen','aeropuertoDestino','aeronave']);
                 $this->applyVuelosFiltros($query, $request);
                 $programaciones = $query->orderBy('fecha_salida','desc')->get();
                 $totales = [
@@ -348,7 +342,13 @@ class ReporteController extends Controller
                 break;
 
             case 'ventas':
-                $query = Venta::with(['programacionVuelo.vuelo','programacionVuelo.ruta.aeropuertoOrigen','programacionVuelo.ruta.aeropuertoDestino','cliente','asiento.tipoClase']);
+                $query = Venta::with([
+                    'programacionVuelo.aeropuertoOrigen',
+                    'programacionVuelo.aeropuertoDestino',
+                    'cliente',
+                    'tickets.asiento.tipoClase',
+                    'transacciones',
+                ]);
                 $this->applyVentasFiltros($query, $request);
                 $ventas = $query->orderBy('created_at','desc')->get();
                 $totales = [
@@ -364,7 +364,7 @@ class ReporteController extends Controller
                 break;
 
             case 'ingresos':
-                $query = Ingreso::with(['programacionVuelo.vuelo','programacionVuelo.ruta.aeropuertoOrigen','programacionVuelo.ruta.aeropuertoDestino']);
+                $query = Ingreso::with(['programacionVuelo.aeropuertoOrigen','programacionVuelo.aeropuertoDestino']);
                 if ($request->filled('fecha_inicio')) $query->whereDate('created_at','>=',$request->fecha_inicio);
                 if ($request->filled('fecha_fin'))    $query->whereDate('created_at','<=',$request->fecha_fin);
                 $ingresos = $query->orderBy('created_at','desc')->get();
@@ -375,7 +375,7 @@ class ReporteController extends Controller
                 break;
 
             case 'egresos':
-                $query = Egreso::with(['devolucion.venta.programacionVuelo.vuelo','devolucion.cliente']);
+                $query = Egreso::with(['devolucion.venta.programacionVuelo','devolucion.cliente']);
                 if ($request->filled('fecha_inicio')) $query->whereDate('created_at','>=',$request->fecha_inicio);
                 if ($request->filled('fecha_fin'))    $query->whereDate('created_at','<=',$request->fecha_fin);
                 $egresos = $query->orderBy('created_at','desc')->get();
@@ -417,8 +417,8 @@ class ReporteController extends Controller
         if ($request->filled('fecha_inicio'))       $query->whereDate('created_at', '>=', $request->fecha_inicio);
         if ($request->filled('fecha_fin'))          $query->whereDate('created_at', '<=', $request->fecha_fin);
         if ($request->filled('estado'))             $query->where('estado', $request->estado);
-        if ($request->filled('metodo_pago'))        $query->where('metodo_pago', $request->metodo_pago);
-        if ($request->filled('clase_id'))           $query->whereHas('asiento', fn($q) => $q->where('tipo_clase_id', $request->clase_id));
+        if ($request->filled('metodo_pago'))        $query->whereHas('transacciones', fn($q) => $q->where('metodo_pago', $request->metodo_pago));
+        if ($request->filled('clase_id'))           $query->whereHas('tickets.asiento', fn($q) => $q->where('tipo_clase_id', $request->clase_id));
         if ($request->filled('aeropuerto_origen'))  $query->whereHas('programacionVuelo.ruta', fn($q) => $q->where('aeropuerto_origen_id', $request->aeropuerto_origen));
         if ($request->filled('aeropuerto_destino')) $query->whereHas('programacionVuelo.ruta', fn($q) => $q->where('aeropuerto_destino_id', $request->aeropuerto_destino));
     }

@@ -11,13 +11,11 @@ class VentaController extends Controller
     public function index(Request $request)
     {
         $query = Venta::with([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
             'cliente',
-            'asiento.tipoClase',
-            'transaccion',
-            'ticket',
+            'tickets.asiento.tipoClase',
+            'transacciones',
             'reserva'
         ]);
 
@@ -30,7 +28,7 @@ class VentaController extends Controller
                          ->orWhere('apellido', 'like', "%{$buscar}%")
                          ->orWhere('documento_identidad', 'like', "%{$buscar}%");
                   })
-                  ->orWhereHas('programacionVuelo.vuelo', function ($q2) use ($buscar) {
+                  ->orWhereHas('programacionVuelo', function ($q2) use ($buscar) {
                       $q2->where('codigo_vuelo', 'like', "%{$buscar}%");
                   });
             });
@@ -60,14 +58,12 @@ class VentaController extends Controller
     public function show(Venta $venta)
     {
         $venta->load([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
             'programacionVuelo.aeronave',
             'cliente',
-            'asiento.tipoClase',
-            'transaccion',
-            'ticket',
+            'tickets.asiento.tipoClase',
+            'transacciones',
             'reserva',
             'devolucion.egreso'
         ]);

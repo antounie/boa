@@ -57,8 +57,8 @@
                             <td>{{ $devolucion->id }}</td>
                             <td><strong>{{ $devolucion->venta->codigo_venta }}</strong></td>
                             <td>{{ $devolucion->cliente->nombre }} {{ $devolucion->cliente->apellido }}</td>
-                            <td>{{ $devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                            <td>{{ $devolucion->venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $devolucion->venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                            <td>{{ $devolucion->venta->programacionVuelo->codigo_vuelo }}</td>
+                            <td>{{ $devolucion->venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $devolucion->venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
                             <td class="text-center text-danger fw-bold">${{ number_format($devolucion->monto_devolucion, 2) }}</td>
                             <td>{{ Str::limit($devolucion->motivo, 30) }}</td>
                             <td>

@@ -30,15 +30,13 @@ class ClienteController extends Controller
     public function show(Cliente $cliente)
     {
         $cliente->load([
-            'reservas.programacionVuelo.vuelo',
-            'reservas.programacionVuelo.ruta.aeropuertoOrigen',
-            'reservas.programacionVuelo.ruta.aeropuertoDestino',
+            'reservas.programacionVuelo.aeropuertoOrigen',
+            'reservas.programacionVuelo.aeropuertoDestino',
             'reservas.asiento.tipoClase',
-            'ventas.programacionVuelo.vuelo',
-            'ventas.programacionVuelo.ruta.aeropuertoOrigen',
-            'ventas.programacionVuelo.ruta.aeropuertoDestino',
-            'ventas.asiento.tipoClase',
-            'ventas.ticket',
+            'ventas.programacionVuelo.aeropuertoOrigen',
+            'ventas.programacionVuelo.aeropuertoDestino',
+            'ventas.tickets.asiento.tipoClase',
+            'ventas.transacciones',
         ]);
 
         return view('admin.clientes.show', compact('cliente'));

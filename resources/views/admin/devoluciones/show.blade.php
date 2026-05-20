@@ -33,12 +33,12 @@
                     </div>
                     <div class="col-md-4">
                         <strong>Vuelo:</strong>
-                        <p>{{ $devolucion->venta->programacionVuelo->vuelo->codigo_vuelo }} |
-                        {{ $devolucion->venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $devolucion->venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</p>
+                        <p>{{ $devolucion->venta->programacionVuelo->codigo_vuelo }} |
+                        {{ $devolucion->venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $devolucion->venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</p>
                     </div>
                     <div class="col-md-4">
                         <strong>Asiento:</strong>
-                        <p>{{ $devolucion->venta->asiento->numero }} ({{ $devolucion->venta->asiento->tipoClase->nombre }})</p>
+                        <p>{{ $devolucion->venta->tickets->first()->asiento->numero }} ({{ $devolucion->venta->tickets->first()->asiento->tipoClase->nombre }})</p>
                     </div>
                 </div>
 
@@ -72,11 +72,11 @@
                     <p class="border rounded p-3 bg-light">{{ $devolucion->motivo }}</p>
                 </div>
 
-                @if($devolucion->venta->ticket)
+                @if($devolucion->venta->tickets->isNotEmpty())
                 <div class="mb-4">
                     <strong>Ticket:</strong>
-                    <p>{{ $devolucion->venta->ticket->numero_ticket }} —
-                        <span class="badge bg-danger">{{ $devolucion->venta->ticket->estado }}</span>
+                    <p>{{ $devolucion->venta->tickets->first()->numero_ticket }} —
+                        <span class="badge bg-danger">{{ $devolucion->venta->tickets->first()->estado }}</span>
                     </p>
                 </div>
                 @endif

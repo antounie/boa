@@ -19,9 +19,8 @@ class DevolucionController extends Controller
     public function index(Request $request)
     {
         $query = Devolucion::with([
-            'venta.programacionVuelo.vuelo',
-            'venta.programacionVuelo.ruta.aeropuertoOrigen',
-            'venta.programacionVuelo.ruta.aeropuertoDestino',
+            'venta.programacionVuelo.aeropuertoOrigen',
+            'venta.programacionVuelo.aeropuertoDestino',
             'cliente',
             'egreso'
         ]);
@@ -52,12 +51,10 @@ class DevolucionController extends Controller
         if ($request->filled('buscar_venta')) {
             $buscar = $request->buscar_venta;
             $ventas = Venta::with([
-                    'programacionVuelo.vuelo',
-                    'programacionVuelo.ruta.aeropuertoOrigen',
-                    'programacionVuelo.ruta.aeropuertoDestino',
+                    'programacionVuelo.aeropuertoOrigen',
+                    'programacionVuelo.aeropuertoDestino',
                     'cliente',
-                    'asiento.tipoClase',
-                    'ticket'
+                    'tickets.asiento.tipoClase',
                 ])
                 ->where('estado', 'Confirmada')
                 ->whereDoesntHave('devolucion')
@@ -81,12 +78,10 @@ class DevolucionController extends Controller
     public function confirmar(Venta $venta)
     {
         $venta->load([
-            'programacionVuelo.vuelo',
-            'programacionVuelo.ruta.aeropuertoOrigen',
-            'programacionVuelo.ruta.aeropuertoDestino',
+            'programacionVuelo.aeropuertoOrigen',
+            'programacionVuelo.aeropuertoDestino',
             'cliente',
-            'asiento.tipoClase',
-            'ticket'
+            'tickets.asiento.tipoClase',
         ]);
 
         // Verificar que se pueda devolver
@@ -110,7 +105,7 @@ class DevolucionController extends Controller
             'motivo' => 'required|string|max:300',
         ]);
 
-        $venta = Venta::with(['programacionVuelo', 'asiento', 'ticket'])->find($request->venta_id);
+        $venta = Venta::with(['programacionVuelo', 'tickets'])->find($request->venta_id);
 
         // Verificaciones previas a la transacción
         if ($venta->estado !== 'Confirmada') {
@@ -135,15 +130,14 @@ class DevolucionController extends Controller
 
             $venta->update(['estado' => 'Cancelada']);
 
-            if ($venta->ticket) {
-                $venta->ticket->update(['estado' => 'Anulado']);
+            foreach ($venta->tickets as $ticket) {
+                $ticket->update(['estado' => 'Anulado']);
+                AsientoProgramacion::where('asiento_id', $ticket->asiento_id)
+                    ->where('programacion_vuelo_id', $venta->programacion_vuelo_id)
+                    ->update(['estado' => 'Disponible']);
             }
 
-            AsientoProgramacion::where('asiento_id', $venta->asiento_id)
-                ->where('programacion_vuelo_id', $venta->programacion_vuelo_id)
-                ->update(['estado' => 'Disponible']);
-
-            $venta->programacionVuelo->decrement('asientos_vendidos');
+            $venta->programacionVuelo->decrement('asientos_vendidos', $venta->tickets->count());
 
             if ($venta->programacionVuelo->estado === 'Completo') {
                 $venta->programacionVuelo->update(['estado' => 'Programado']);
@@ -172,11 +166,9 @@ class DevolucionController extends Controller
     public function show(Devolucion $devolucion)
     {
         $devolucion->load([
-            'venta.programacionVuelo.vuelo',
-            'venta.programacionVuelo.ruta.aeropuertoOrigen',
-            'venta.programacionVuelo.ruta.aeropuertoDestino',
-            'venta.asiento.tipoClase',
-            'venta.ticket',
+            'venta.programacionVuelo.aeropuertoOrigen',
+            'venta.programacionVuelo.aeropuertoDestino',
+            'venta.tickets.asiento.tipoClase',
             'cliente',
             'egreso'
         ]);

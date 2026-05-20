@@ -11,13 +11,13 @@
 @php
 $categorias = [
     ['icono'=>'bi-people-fill',       'label'=>'Administración',        'tablas'=>['usuarios','roles','permisos','clientes']],
-    ['icono'=>'bi-airplane',          'label'=>'Programación de Vuelos','tablas'=>['aeropuertos','tipo_clases','aeronaves','asientos','rutas','vuelos','programacion_vuelos']],
+    ['icono'=>'bi-airplane',          'label'=>'Programación de Vuelos','tablas'=>['aeropuertos','tipo_clases','aeronaves','asientos','rutas','tramos','programacion_vuelos']],
     ['icono'=>'bi-person-badge-fill', 'label'=>'Personal',              'tablas'=>['empleados','tripulaciones']],
-    ['icono'=>'bi-shop',              'label'=>'Comercial',             'tablas'=>['ventas','devoluciones','reservas']],
+    ['icono'=>'bi-shop',              'label'=>'Comercial',             'tablas'=>['ventas','devoluciones']],
     ['icono'=>'bi-box-arrow-right',   'label'=>'Operaciones',           'tablas'=>['salidas']],
     ['icono'=>'bi-cash-stack',        'label'=>'Financiero',            'tablas'=>['ingresos','egresos']],
     ['icono'=>'bi-bar-chart-fill',    'label'=>'Reportes',              'tablas'=>['reportes']],
-    ['icono'=>'bi-ticket-perforated', 'label'=>'Acceso Cliente',        'tablas'=>['tickets']],
+    ['icono'=>'bi-ticket-perforated', 'label'=>'Acceso Cliente',        'tablas'=>['reservas','compras','tickets']],
 ];
 @endphp
 

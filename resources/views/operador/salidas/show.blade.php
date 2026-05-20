@@ -11,18 +11,18 @@
     <div class="col-md-10">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-info text-white">
-                <h5 class="mb-0"><i class="bi bi-box-arrow-right"></i> Detalle de Salida: {{ $salida->programacionVuelo->vuelo->codigo_vuelo }}</h5>
+                <h5 class="mb-0"><i class="bi bi-box-arrow-right"></i> Detalle de Salida: {{ $salida->programacionVuelo->codigo_vuelo }}</h5>
             </div>
             <div class="card-body p-4">
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <strong>Vuelo:</strong>
-                        <p class="text-primary fs-5">{{ $salida->programacionVuelo->vuelo->codigo_vuelo }}</p>
+                        <p class="text-primary fs-5">{{ $salida->programacionVuelo->codigo_vuelo }}</p>
                     </div>
                     <div class="col-md-3">
                         <strong>Ruta:</strong>
-                        <p>{{ $salida->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $salida->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}
-                        <br><small class="text-muted">{{ $salida->programacionVuelo->ruta->aeropuertoOrigen->ciudad }} → {{ $salida->programacionVuelo->ruta->aeropuertoDestino->ciudad }}</small></p>
+                        <p>{{ $salida->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $salida->programacionVuelo->aeropuertoDestino->codigo_IATA }}
+                        <br><small class="text-muted">{{ $salida->programacionVuelo->aeropuertoOrigen->ciudad }} → {{ $salida->programacionVuelo->aeropuertoDestino->ciudad }}</small></p>
                     </div>
                     <div class="col-md-3">
                         <strong>Aeronave:</strong>
@@ -89,12 +89,12 @@
                             <tr>
                                 <td><strong>{{ $venta->codigo_venta }}</strong></td>
                                 <td>{{ $venta->cliente->nombre }} {{ $venta->cliente->apellido }}</td>
-                                <td>{{ $venta->asiento->numero }}</td>
-                                <td><span class="badge bg-info">{{ $venta->asiento->tipoClase->nombre }}</span></td>
+                                <td>{{ $venta->tickets->first()?->asiento?->numero ?? '-' }}</td>
+                                <td><span class="badge bg-info">{{ $venta->tickets->first()?->asiento?->tipoClase?->nombre ?? '-' }}</span></td>
                                 <td>${{ number_format($venta->monto_total, 2) }}</td>
                                 <td>
-                                    @if($venta->ticket)
-                                        <span class="badge bg-success">{{ $venta->ticket->numero_ticket }}</span>
+                                    @if($venta->tickets->isNotEmpty())
+                                        <span class="badge bg-success">{{ $venta->tickets->first()->numero_ticket }}</span>
                                     @else
                                         -
                                     @endif

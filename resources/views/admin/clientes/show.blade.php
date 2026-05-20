@@ -58,8 +58,8 @@
                         @foreach($cliente->reservas as $reserva)
                         <tr>
                             <td><strong>{{ $reserva->codigo_reserva }}</strong></td>
-                            <td>{{ $reserva->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                            <td>{{ $reserva->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $reserva->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                            <td>{{ $reserva->programacionVuelo->codigo_vuelo }}</td>
+                            <td>{{ $reserva->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $reserva->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
                             <td>{{ $reserva->asiento->numero }} ({{ $reserva->asiento->tipoClase->nombre }})</td>
                             <td>${{ number_format($reserva->monto, 2) }}</td>
                             <td>{{ $reserva->created_at->format('d/m/Y H:i') }}</td>
@@ -103,15 +103,15 @@
                         @foreach($cliente->ventas as $venta)
                         <tr>
                             <td><strong>{{ $venta->codigo_venta }}</strong></td>
-                            <td>{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                            <td>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
-                            <td>{{ $venta->asiento->numero }} ({{ $venta->asiento->tipoClase->nombre }})</td>
+                            <td>{{ $venta->programacionVuelo->codigo_vuelo }}</td>
+                            <td>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
+                            <td>{{ $venta->tickets->first()->asiento->numero }} ({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</td>
                             <td>${{ number_format($venta->monto_total, 2) }}</td>
-                            <td>{{ $venta->metodo_pago }}</td>
+                            <td>{{ ($venta->transacciones->first()->metodo_pago ?? '-') }}</td>
                             <td>
-                                @if($venta->ticket)
-                                    <span class="badge bg-{{ $venta->ticket->estado === 'Emitido' ? 'primary' : 'danger' }}">
-                                        {{ $venta->ticket->numero_ticket }}
+                                @if($venta->tickets->isNotEmpty())
+                                    <span class="badge bg-{{ $venta->tickets->first()->estado === 'Emitido' ? 'primary' : 'danger' }}">
+                                        {{ $venta->tickets->first()->numero_ticket }}
                                     </span>
                                 @else
                                     <span class="text-muted">-</span>

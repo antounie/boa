@@ -160,12 +160,12 @@
                     @forelse($ingresos as $ingreso)
                     <tr>
                         <td class="text-muted small">{{ $ingreso->id }}</td>
-                        <td><strong style="color:var(--accent)">{{ $ingreso->programacionVuelo->vuelo->codigo_vuelo }}</strong></td>
+                        <td><strong style="color:var(--accent)">{{ $ingreso->programacionVuelo->codigo_vuelo }}</strong></td>
                         <td>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="iata-badge">{{ $ingreso->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $ingreso->programacionVuelo->aeropuertoOrigen->codigo_IATA }}</span>
                                 <i class="bi bi-arrow-right text-muted small"></i>
-                                <span class="iata-badge">{{ $ingreso->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $ingreso->programacionVuelo->aeropuertoDestino->codigo_IATA }}</span>
                             </div>
                         </td>
                         <td class="text-center">{{ $ingreso->cantidad_pasajes }}</td>

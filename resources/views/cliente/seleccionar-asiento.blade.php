@@ -12,9 +12,14 @@
 <div class="card shadow-sm mb-3">
     <div class="card-header bg-info text-white">
         <h5 class="mb-0">
-            {{ $programacion->vuelo->codigo_vuelo }} |
-            {{ $programacion->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->ruta->aeropuertoDestino->codigo_IATA }} |
-            {{ $programacion->fecha_salida }} {{ $programacion->hora_salida }}
+            {{ $programacion->codigo_vuelo }} |
+            @if($subTramo ?? null)
+                <span class="badge bg-warning text-dark me-1">Tramo parcial</span>
+                {{ $subTramo->aeropuertoOrigen->codigo_IATA }} → {{ $subTramo->aeropuertoDestino->codigo_IATA }}
+            @else
+                {{ $programacion->aeropuertoOrigen->codigo_IATA }} → {{ $programacion->aeropuertoDestino->codigo_IATA }}
+            @endif
+            | {{ $programacion->fecha_salida }} {{ $programacion->hora_salida }}
         </h5>
     </div>
 </div>
@@ -27,13 +32,17 @@
                 {{-- Precios por clase --}}
                 <div class="row mb-3 g-2">
                     @foreach($clases as $clase)
-                    @php $colorClaseH = $clase->nombre === 'Económica' ? 'success' : ($clase->nombre === 'Ejecutiva' ? 'primary' : 'warning'); @endphp
+                    @php
+                        $colorClaseH = $clase->nombre === 'Económica' ? 'success' : ($clase->nombre === 'Ejecutiva' ? 'primary' : 'warning');
+                        $precioClase = $programacion->precios->firstWhere('tipo_clase_id', $clase->id);
+                        $precioMostrar = $precioClase ? $precioClase->precio : ($programacion->precio_base * $clase->multiplicador_precio);
+                    @endphp
                     <div class="col">
                         <div class="card border-{{ $colorClaseH }} text-center">
                             <div class="card-body py-2 px-2">
                                 <h6 class="mb-1 small">{{ $clase->nombre }}</h6>
                                 <h5 class="mb-0 text-{{ $colorClaseH }}">
-                                    Bs. {{ number_format($programacion->precio_base * $clase->multiplicador_precio, 2) }}
+                                    Bs. {{ number_format($precioMostrar, 2) }}
                                 </h5>
                                 <small class="text-muted">{{ $asientos->filter(fn($ap) => $ap->asiento->tipo_clase_id == $clase->id && $ap->estado == 'Disponible')->count() }} disponibles</small>
                             </div>
@@ -78,7 +87,8 @@
                         @endif
 
                         @php
-                            $precioAsiento = $programacion->precio_base * $ap->asiento->tipoClase->multiplicador_precio;
+                            $precioProg = $programacion->precios->firstWhere('tipo_clase_id', $ap->asiento->tipo_clase_id);
+                            $precioAsiento = $precioProg ? $precioProg->precio : ($programacion->precio_base * $ap->asiento->tipoClase->multiplicador_precio);
                             $colorClase = $ap->asiento->tipoClase->nombre === 'Económica' ? 'success' : ($ap->asiento->tipoClase->nombre === 'Ejecutiva' ? 'primary' : 'warning');
                         @endphp
 
@@ -141,9 +151,12 @@
                         <span>Total:</span>
                         <span id="totalMonto" class="text-primary">Bs. 0.00</span>
                     </div>
-                    <form id="formCompra" action="{{ route('cliente.procesar.pago') }}" method="POST">
+                    <form id="formCompra" action="{{ route('cliente.datos.pasajeros') }}" method="POST">
                         @csrf
                         <input type="hidden" name="programacion_vuelo_id" value="{{ $programacion->id }}">
+                        @if($subTramo ?? null)
+                            <input type="hidden" name="sub_tramo_id" value="{{ $subTramo->id }}">
+                        @endif
                         <div id="asientoInputs"></div>
                         <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="btnProceder" disabled>
                             <i class="bi bi-credit-card me-2"></i>Proceder al pago

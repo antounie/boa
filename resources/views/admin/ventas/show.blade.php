@@ -68,12 +68,12 @@
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <strong>Vuelo:</strong>
-                        <p class="text-primary fw-bold">{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</p>
+                        <p class="text-primary fw-bold">{{ $venta->programacionVuelo->codigo_vuelo }}</p>
                     </div>
                     <div class="col-md-3">
                         <strong>Ruta:</strong>
-                        <p>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}
-                        <br><small class="text-muted">{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->ciudad }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->ciudad }}</small></p>
+                        <p>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}
+                        <br><small class="text-muted">{{ $venta->programacionVuelo->aeropuertoOrigen->ciudad }} → {{ $venta->programacionVuelo->aeropuertoDestino->ciudad }}</small></p>
                     </div>
                     <div class="col-md-3">
                         <strong>Fecha Vuelo:</strong>
@@ -92,16 +92,16 @@
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <strong>Asiento:</strong>
-                        <p>{{ $venta->asiento->numero }} ({{ $venta->asiento->tipoClase->nombre }})</p>
+                        <p>{{ $venta->tickets->first()->asiento->numero }} ({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</p>
                     </div>
                     <div class="col-md-3">
                         <strong>Método de Pago:</strong>
-                        <p><span class="badge bg-info fs-6">{{ $venta->metodo_pago }}</span></p>
+                        <p><span class="badge bg-info fs-6">{{ ($venta->transacciones->first()->metodo_pago ?? '-') }}</span></p>
                     </div>
                     <div class="col-md-3">
                         <strong>Transacción:</strong>
-                        <p>{{ $venta->transaccion->referencia }}
-                        <br><span class="badge bg-{{ $venta->transaccion->estado === 'Aprobado' ? 'success' : 'danger' }}">{{ $venta->transaccion->estado }}</span></p>
+                        <p>{{ $venta->transacciones->first()->referencia }}
+                        <br><span class="badge bg-{{ $venta->transacciones->first()->estado === 'Aprobado' ? 'success' : 'danger' }}">{{ $venta->transacciones->first()->estado }}</span></p>
                     </div>
                     <div class="col-md-3">
                         <strong>Monto Total:</strong>
@@ -109,23 +109,33 @@
                     </div>
                 </div>
 
-                @if($venta->ticket)
+                @if($venta->tickets->isNotEmpty())
                 <hr>
-                <h6><i class="bi bi-ticket-perforated"></i> Ticket</h6>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <strong>Número de Ticket:</strong>
-                        <p class="fs-5">{{ $venta->ticket->numero_ticket }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Estado:</strong>
-                        <p>
-                            <span class="badge bg-{{ $venta->ticket->estado === 'Emitido' ? 'success' : 'danger' }} fs-6">
-                                {{ $venta->ticket->estado }}
-                            </span>
-                        </p>
-                    </div>
-                </div>
+                <h6><i class="bi bi-ticket-perforated"></i> Tickets</h6>
+                <table class="table table-bordered mb-4">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Número de Ticket</th>
+                            <th>Asiento</th>
+                            <th>Clase</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($venta->tickets as $ticket)
+                        <tr>
+                            <td class="fw-bold">{{ $ticket->numero_ticket }}</td>
+                            <td>{{ $ticket->asiento->numero }}</td>
+                            <td>{{ $ticket->asiento->tipoClase->nombre }}</td>
+                            <td>
+                                <span class="badge bg-{{ $ticket->estado === 'Emitido' ? 'success' : 'danger' }}">
+                                    {{ $ticket->estado }}
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
                 @endif
 
                 @if($venta->devolucion)

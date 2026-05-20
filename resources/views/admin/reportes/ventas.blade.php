@@ -192,16 +192,16 @@
                     <tr>
                         <td><strong style="color:var(--accent)">{{ $v->codigo_venta }}</strong></td>
                         <td>{{ $v->cliente->nombre }} {{ $v->cliente->apellido }}</td>
-                        <td>{{ $v->programacionVuelo->vuelo->codigo_vuelo }}</td>
+                        <td>{{ $v->programacionVuelo->codigo_vuelo }}</td>
                         <td>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="iata-badge">{{ $v->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $v->programacionVuelo->aeropuertoOrigen->codigo_IATA }}</span>
                                 <i class="bi bi-arrow-right text-muted small"></i>
-                                <span class="iata-badge">{{ $v->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $v->programacionVuelo->aeropuertoDestino->codigo_IATA }}</span>
                             </div>
                         </td>
-                        <td class="small">{{ $v->asiento->tipoClase->nombre }}</td>
-                        <td class="small">{{ $v->metodo_pago }}</td>
+                        <td class="small">{{ $v->tickets->first()?->asiento?->tipoClase?->nombre ?? '-' }}</td>
+                        <td class="small">{{ $v->transacciones->first()?->metodo_pago ?? '-' }}</td>
                         <td class="text-end fw-bold" style="color:var(--accent)">
                             Bs. {{ number_format($v->monto_total, 2) }}
                         </td>

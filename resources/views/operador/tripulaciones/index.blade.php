@@ -20,7 +20,7 @@
                             <option value="">Seleccionar programación de vuelo...</option>
                             @foreach($programaciones as $prog)
                                 <option value="{{ $prog->id }}" {{ request('programacion_id') == $prog->id ? 'selected' : '' }}>
-                                    {{ $prog->vuelo->codigo_vuelo }} | {{ $prog->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $prog->ruta->aeropuertoDestino->codigo_IATA }} | {{ $prog->fecha_salida }} {{ $prog->hora_salida }}
+                                    {{ $prog->codigo_vuelo }} | {{ $prog->aeropuertoOrigen->codigo_IATA }} → {{ $prog->aeropuertoDestino->codigo_IATA }} | {{ $prog->fecha_salida }} {{ $prog->hora_salida }}
                                 </option>
                             @endforeach
                         </select>
@@ -39,8 +39,8 @@
                     <div>
                         <h5 class="mb-0">
                             <i class="bi bi-airplane"></i>
-                            {{ $programacionSeleccionada->vuelo->codigo_vuelo }} |
-                            {{ $programacionSeleccionada->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $programacionSeleccionada->ruta->aeropuertoDestino->codigo_IATA }} |
+                            {{ $programacionSeleccionada->codigo_vuelo }} |
+                            {{ $programacionSeleccionada->aeropuertoOrigen->codigo_IATA }} → {{ $programacionSeleccionada->aeropuertoDestino->codigo_IATA }} |
                             {{ $programacionSeleccionada->fecha_salida }} {{ $programacionSeleccionada->hora_salida }}
                         </h5>
                         <small>Aeronave: {{ $programacionSeleccionada->aeronave->matricula }} - {{ $programacionSeleccionada->aeronave->modelo }}</small>

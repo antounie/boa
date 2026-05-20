@@ -101,41 +101,6 @@
             </div>
             @endif
 
-            {{-- Vuelos --}}
-            @if($resultados['vuelos']->count() > 0)
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-airplane"></i> Vuelos ({{ $resultados['vuelos']->count() }})</h5>
-                </div>
-                <div class="card-body table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Código</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($resultados['vuelos'] as $vuelo)
-                            <tr>
-                                <td><strong class="text-primary">{{ $vuelo->codigo_vuelo }}</strong></td>
-                                <td>
-                                    <span class="badge bg-{{ $vuelo->tipo === 'Directo' ? 'primary' : 'warning' }}">
-                                        {{ $vuelo->tipo === 'ConEscalas' ? 'Con Escalas' : $vuelo->tipo }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-{{ $vuelo->estado === 'Activo' ? 'success' : 'danger' }}">{{ $vuelo->estado }}</span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            @endif
-
             {{-- Programaciones disponibles --}}
             @if($resultados['programaciones']->count() > 0)
             <div class="card shadow-sm mb-4">
@@ -158,12 +123,12 @@
                         <tbody>
                             @foreach($resultados['programaciones'] as $prog)
                             <tr>
-                                <td><strong class="text-primary">{{ $prog->vuelo->codigo_vuelo }}</strong></td>
+                                <td><strong class="text-primary">{{ $prog->codigo_vuelo }}</strong></td>
                                 <td>
-                                    {{ $prog->ruta->aeropuertoOrigen->codigo_IATA }}
+                                    {{ $prog->aeropuertoOrigen->codigo_IATA }}
                                     <i class="bi bi-arrow-right"></i>
-                                    {{ $prog->ruta->aeropuertoDestino->codigo_IATA }}
-                                    <br><small class="text-muted">{{ $prog->ruta->aeropuertoOrigen->ciudad }} → {{ $prog->ruta->aeropuertoDestino->ciudad }}</small>
+                                    {{ $prog->aeropuertoDestino->codigo_IATA }}
+                                    <br><small class="text-muted">{{ $prog->aeropuertoOrigen->ciudad }} → {{ $prog->aeropuertoDestino->ciudad }}</small>
                                 </td>
                                 <td>{{ $prog->aeronave->matricula }}</td>
                                 <td>{{ $prog->fecha_salida }}</td>

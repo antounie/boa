@@ -32,24 +32,27 @@ class UsuarioController extends Controller
 
     public function create()
     {
-        $roles = Rol::all();
+        $roles = Rol::where('nombre', '!=', 'Cliente')->get();
         return view('admin.usuarios.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        $clienteRolId = Rol::where('nombre', 'Cliente')->value('id');
+
         $request->validate([
             'username' => 'required|string|max:50|unique:usuarios',
             'email' => 'required|email|max:100|unique:usuarios',
             'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/',
             'nombre' => 'required|string|max:80',
             'apellido' => 'required|string|max:80',
-            'rol_id' => 'required|exists:roles,id',
+            'rol_id' => ['required', 'exists:roles,id', Rule::notIn([$clienteRolId])],
         ], [
             'password.regex' => 'La contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&).',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'username.unique' => 'Este nombre de usuario ya está registrado.',
             'email.unique' => 'Este correo electrónico ya está registrado.',
+            'rol_id.not_in' => 'Los clientes deben crearse a través del formulario de registro público.',
         ]);
 
         Usuario::create([
@@ -69,18 +72,32 @@ class UsuarioController extends Controller
 
     public function edit(Usuario $usuario)
     {
-        $roles = Rol::all();
+        $clienteRolId = Rol::where('nombre', 'Cliente')->value('id');
+        // Si el usuario ya es cliente, mostrar todos los roles (incluyendo Cliente) para que el dropdown lo refleje;
+        // si no, ocultar Cliente para impedir convertir un staff en cliente desde aquí.
+        $roles = $usuario->rol_id === $clienteRolId
+            ? Rol::all()
+            : Rol::where('nombre', '!=', 'Cliente')->get();
         return view('admin.usuarios.edit', compact('usuario', 'roles'));
     }
 
     public function update(Request $request, Usuario $usuario)
     {
+        $clienteRolId = Rol::where('nombre', 'Cliente')->value('id');
+        // Solo bloquear cambiar A Cliente; permitir mantenerse como Cliente si ya lo era.
+        $rolIdRules = ['required', 'exists:roles,id'];
+        if ($usuario->rol_id !== $clienteRolId) {
+            $rolIdRules[] = Rule::notIn([$clienteRolId]);
+        }
+
         $request->validate([
             'username' => ['required', 'string', 'max:50', Rule::unique('usuarios')->ignore($usuario->id)],
             'email' => ['required', 'email', 'max:100', Rule::unique('usuarios')->ignore($usuario->id)],
             'nombre' => 'required|string|max:80',
             'apellido' => 'required|string|max:80',
-            'rol_id' => 'required|exists:roles,id',
+            'rol_id' => $rolIdRules,
+        ], [
+            'rol_id.not_in' => 'No se puede asignar el rol Cliente desde aquí. Los clientes se crean por auto-registro.',
         ]);
 
         $datos = [

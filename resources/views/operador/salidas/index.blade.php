@@ -37,13 +37,13 @@
                 @foreach($vuelosElegibles as $prog)
                 <tr>
                     <td>
-                        <strong style="color:var(--accent)">{{ $prog->vuelo->codigo_vuelo }}</strong>
+                        <strong style="color:var(--accent)">{{ $prog->codigo_vuelo }}</strong>
                     </td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="iata-badge">{{ $prog->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                            <span class="iata-badge">{{ $prog->aeropuertoOrigen->codigo_IATA }}</span>
                             <i class="bi bi-arrow-right text-muted"></i>
-                            <span class="iata-badge">{{ $prog->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                            <span class="iata-badge">{{ $prog->aeropuertoDestino->codigo_IATA }}</span>
                         </div>
                     </td>
                     <td>{{ $prog->aeronave->matricula }}</td>
@@ -63,7 +63,7 @@
                             @csrf
                             <input type="hidden" name="programacion_vuelo_id" value="{{ $prog->id }}">
                             <button type="submit" class="btn btn-success btn-sm fw-semibold"
-                                onclick="return confirm('¿Confirmar la salida del vuelo {{ $prog->vuelo->codigo_vuelo }}?')">
+                                onclick="return confirm('¿Confirmar la salida del vuelo {{ $prog->codigo_vuelo }}?')">
                                 <i class="bi bi-send-fill me-1"></i>Registrar salida
                             </button>
                         </form>
@@ -117,13 +117,13 @@
                     <tr>
                         <td class="text-muted small">{{ $salida->id }}</td>
                         <td>
-                            <strong style="color:var(--accent)">{{ $salida->programacionVuelo->vuelo->codigo_vuelo }}</strong>
+                            <strong style="color:var(--accent)">{{ $salida->programacionVuelo->codigo_vuelo }}</strong>
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-1">
-                                <span class="iata-badge">{{ $salida->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $salida->programacionVuelo->aeropuertoOrigen->codigo_IATA }}</span>
                                 <i class="bi bi-arrow-right text-muted small"></i>
-                                <span class="iata-badge">{{ $salida->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                                <span class="iata-badge">{{ $salida->programacionVuelo->aeropuertoDestino->codigo_IATA }}</span>
                             </div>
                         </td>
                         <td>

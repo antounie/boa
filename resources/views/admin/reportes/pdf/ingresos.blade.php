@@ -28,11 +28,11 @@
         <p>Generado: {{ date('d/m/Y H:i') }}</p>
     </div>
 
-    @if($filtros['fecha_inicio'] || $filtros['fecha_fin'])
+    @if(($filtros['fecha_inicio'] ?? null) || ($filtros['fecha_fin'] ?? null))
     <div class="filtros">
         <strong>Filtros:</strong>
-        @if($filtros['fecha_inicio']) Desde: {{ $filtros['fecha_inicio'] }} @endif
-        @if($filtros['fecha_fin']) Hasta: {{ $filtros['fecha_fin'] }} @endif
+        @if($filtros['fecha_inicio'] ?? null) Desde: {{ $filtros['fecha_inicio'] }} @endif
+        @if($filtros['fecha_fin'] ?? null) Hasta: {{ $filtros['fecha_fin'] }} @endif
     </div>
     @endif
 
@@ -61,8 +61,8 @@
             @foreach($ingresos as $ingreso)
             <tr>
                 <td>{{ $ingreso->id }}</td>
-                <td>{{ $ingreso->programacionVuelo->vuelo->codigo_vuelo }}</td>
-                <td>{{ $ingreso->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                <td>{{ $ingreso->programacionVuelo->codigo_vuelo }}</td>
+                <td>{{ $ingreso->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
                 <td>{{ $ingreso->cantidad_pasajes }}</td>
                 <td>${{ number_format($ingreso->monto_total, 2) }}</td>
                 <td>{{ $ingreso->created_at->format('d/m/Y H:i') }}</td>

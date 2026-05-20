@@ -31,12 +31,12 @@
         <p>Generado: {{ date('d/m/Y H:i') }}</p>
     </div>
 
-    @if($filtros['fecha_inicio'] || $filtros['fecha_fin'] || $filtros['estado'])
+    @if(($filtros['fecha_inicio'] ?? null) || ($filtros['fecha_fin'] ?? null) || ($filtros['estado'] ?? null))
     <div class="filtros">
         <strong>Filtros aplicados:</strong>
-        @if($filtros['fecha_inicio']) Desde: {{ $filtros['fecha_inicio'] }} @endif
-        @if($filtros['fecha_fin']) Hasta: {{ $filtros['fecha_fin'] }} @endif
-        @if($filtros['estado']) Estado: {{ $filtros['estado'] }} @endif
+        @if($filtros['fecha_inicio'] ?? null) Desde: {{ $filtros['fecha_inicio'] }} @endif
+        @if($filtros['fecha_fin'] ?? null) Hasta: {{ $filtros['fecha_fin'] }} @endif
+        @if($filtros['estado'] ?? null) Estado: {{ $filtros['estado'] }} @endif
     </div>
     @endif
 
@@ -67,8 +67,8 @@
         <tbody>
             @foreach($programaciones as $prog)
             <tr>
-                <td><strong>{{ $prog->vuelo->codigo_vuelo }}</strong></td>
-                <td>{{ $prog->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $prog->ruta->aeropuertoDestino->codigo_IATA }}</td>
+                <td><strong>{{ $prog->codigo_vuelo }}</strong></td>
+                <td>{{ $prog->aeropuertoOrigen->codigo_IATA }} → {{ $prog->aeropuertoDestino->codigo_IATA }}</td>
                 <td>{{ $prog->aeronave->matricula }}</td>
                 <td>{{ $prog->fecha_salida }}</td>
                 <td>{{ $prog->hora_salida }}</td>

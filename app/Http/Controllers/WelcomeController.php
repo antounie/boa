@@ -25,22 +25,35 @@ class WelcomeController extends Controller
             'destino' => 'required|exists:aeropuertos,id|different:origen',
             'fecha'  => 'required|date|after_or_equal:today',
         ], [
-            'destino.different'      => 'El destino debe ser diferente al origen.',
-            'fecha.after_or_equal'   => 'La fecha debe ser hoy o posterior.',
+            'destino.different'    => 'El destino debe ser diferente al origen.',
+            'fecha.after_or_equal' => 'La fecha debe ser hoy o posterior.',
         ]);
 
         $aeropuertos = Aeropuerto::orderBy('ciudad')->get();
 
-        $vuelos = ProgramacionVuelo::with([
-                'vuelo',
-                'ruta.aeropuertoOrigen',
-                'ruta.aeropuertoDestino',
-                'aeronave',
-            ])
-            ->withCount(['asientosProgramacion as asientos_disponibles' => function ($q) {
-                $q->where('estado', 'Disponible');
-            }])
-            ->whereHas('ruta', function ($q) use ($request) {
+        $base = [
+            'aeropuertoOrigen',
+            'aeropuertoDestino',
+            'aeronave',
+            'rutaTramo.tramo.subTramos.aeropuertoOrigen',
+            'rutaTramo.tramo.subTramos.aeropuertoDestino',
+            'precios.tipoClase',
+        ];
+
+        // Vuelos de ruta completa
+        $vuelos = ProgramacionVuelo::with($base)
+            ->withCount(['asientosProgramacion as asientos_disponibles' => fn($q) => $q->where('estado', 'Disponible')])
+            ->where('aeropuerto_origen_id', $request->origen)
+            ->where('aeropuerto_destino_id', $request->destino)
+            ->where('fecha_salida', $request->fecha)
+            ->where('estado', 'Programado')
+            ->orderBy('hora_salida')
+            ->get();
+
+        // Vuelos con sub-tramo que coincide con la ruta buscada
+        $vuelosSubTramo = ProgramacionVuelo::with($base)
+            ->withCount(['asientosProgramacion as asientos_disponibles' => fn($q) => $q->where('estado', 'Disponible')])
+            ->whereHas('rutaTramo.tramo.subTramos', function ($q) use ($request) {
                 $q->where('aeropuerto_origen_id', $request->origen)
                   ->where('aeropuerto_destino_id', $request->destino);
             })
@@ -49,25 +62,39 @@ class WelcomeController extends Controller
             ->orderBy('hora_salida')
             ->get();
 
-        return view('welcome', compact('aeropuertos', 'vuelos'));
+        $resultadosParciales = collect();
+        foreach ($vuelosSubTramo as $prog) {
+            $subTramo = $prog->rutaTramo?->tramo?->subTramos
+                ->where('aeropuerto_origen_id', (int) $request->origen)
+                ->where('aeropuerto_destino_id', (int) $request->destino)
+                ->first();
+            if ($subTramo) {
+                $resultadosParciales->push(['programacion' => $prog, 'sub_tramo' => $subTramo]);
+            }
+        }
+
+        return view('welcome', compact('aeropuertos', 'vuelos', 'resultadosParciales'));
     }
 
-    public function seleccionar(ProgramacionVuelo $programacion)
+    public function seleccionar(ProgramacionVuelo $programacion, \Illuminate\Http\Request $request)
     {
-        if (!auth()->check()) {
-            $programacion->loadMissing('ruta');
+        $subTramoId = $request->query('sub_tramo_id');
 
+        if (!auth()->check()) {
             session(['vuelo_pendiente' => [
                 'programacion_id' => $programacion->id,
-                'origen'          => $programacion->ruta->aeropuerto_origen_id,
-                'destino'         => $programacion->ruta->aeropuerto_destino_id,
-                'fecha'           => $programacion->fecha_salida,
+                'sub_tramo_id'    => $subTramoId,
             ]]);
 
             return redirect()->route('login')
                 ->with('info', 'Debe iniciar sesión para comprar un pasaje.');
         }
 
-        return redirect()->route('cliente.seleccionar.asiento', $programacion);
+        $params = ['programacion' => $programacion];
+        if ($subTramoId) {
+            $params['sub_tramo_id'] = $subTramoId;
+        }
+
+        return redirect()->route('cliente.seleccionar.asiento', $params);
     }
 }

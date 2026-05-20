@@ -11,9 +11,8 @@ class EgresoController extends Controller
     public function index(Request $request)
     {
         $query = Egreso::with([
-            'devolucion.venta.programacionVuelo.vuelo',
-            'devolucion.venta.programacionVuelo.ruta.aeropuertoOrigen',
-            'devolucion.venta.programacionVuelo.ruta.aeropuertoDestino',
+            'devolucion.venta.programacionVuelo.aeropuertoOrigen',
+            'devolucion.venta.programacionVuelo.aeropuertoDestino',
             'devolucion.cliente'
         ]);
 
@@ -46,10 +45,9 @@ class EgresoController extends Controller
     public function show(Egreso $egreso)
     {
         $egreso->load([
-            'devolucion.venta.programacionVuelo.vuelo',
-            'devolucion.venta.programacionVuelo.ruta.aeropuertoOrigen',
-            'devolucion.venta.programacionVuelo.ruta.aeropuertoDestino',
-            'devolucion.venta.asiento.tipoClase',
+            'devolucion.venta.programacionVuelo.aeropuertoOrigen',
+            'devolucion.venta.programacionVuelo.aeropuertoDestino',
+            'devolucion.venta.tickets.asiento.tipoClase',
             'devolucion.cliente'
         ]);
 

@@ -100,15 +100,15 @@
                                 {{ $venta->cliente->nombre }} {{ $venta->cliente->apellido }}
                                 <br><small class="text-muted">{{ $venta->cliente->documento_identidad }}</small>
                             </td>
-                            <td><strong class="text-primary">{{ $venta->programacionVuelo->vuelo->codigo_vuelo }}</strong></td>
-                            <td>{{ $venta->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}</td>
-                            <td>{{ $venta->asiento->numero }} <small class="text-muted">({{ $venta->asiento->tipoClase->nombre }})</small></td>
-                            <td><span class="badge bg-info">{{ $venta->metodo_pago }}</span></td>
+                            <td><strong class="text-primary">{{ $venta->programacionVuelo->codigo_vuelo }}</strong></td>
+                            <td>{{ $venta->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $venta->programacionVuelo->aeropuertoDestino->codigo_IATA }}</td>
+                            <td>{{ $venta->tickets->first()->asiento->numero }} <small class="text-muted">({{ $venta->tickets->first()->asiento->tipoClase->nombre }})</small></td>
+                            <td><span class="badge bg-info">{{ ($venta->transacciones->first()->metodo_pago ?? '-') }}</span></td>
                             <td class="text-center fw-bold">${{ number_format($venta->monto_total, 2) }}</td>
                             <td>
-                                @if($venta->ticket)
-                                    <span class="badge bg-{{ $venta->ticket->estado === 'Emitido' ? 'primary' : 'danger' }}">
-                                        {{ $venta->ticket->numero_ticket }}
+                                @if($venta->tickets->isNotEmpty())
+                                    <span class="badge bg-{{ $venta->tickets->first()->estado === 'Emitido' ? 'primary' : 'danger' }}">
+                                        {{ $venta->tickets->first()->numero_ticket }}
                                     </span>
                                 @else
                                     -

@@ -12,10 +12,7 @@ class Venta extends Model
         'codigo_venta',
         'programacion_vuelo_id',
         'cliente_id',
-        'asiento_id',
-        'transaccion_id',
         'reserva_id',
-        'metodo_pago',
         'monto_total',
         'estado',
     ];
@@ -30,24 +27,19 @@ class Venta extends Model
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-    public function asiento()
-    {
-        return $this->belongsTo(Asiento::class, 'asiento_id');
-    }
-
-    public function transaccion()
-    {
-        return $this->belongsTo(Transaccion::class, 'transaccion_id');
-    }
-
     public function reserva()
     {
         return $this->belongsTo(Reserva::class, 'reserva_id');
     }
 
-    public function ticket()
+    public function tickets()
     {
-        return $this->hasOne(Ticket::class, 'venta_id');
+        return $this->hasMany(Ticket::class, 'venta_id');
+    }
+
+    public function transacciones()
+    {
+        return $this->hasMany(Transaccion::class, 'venta_id');
     }
 
     public function devolucion()

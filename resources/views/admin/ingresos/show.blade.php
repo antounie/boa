@@ -17,12 +17,12 @@
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <strong>Vuelo:</strong>
-                        <p class="text-primary fs-5">{{ $ingreso->programacionVuelo->vuelo->codigo_vuelo }}</p>
+                        <p class="text-primary fs-5">{{ $ingreso->programacionVuelo->codigo_vuelo }}</p>
                     </div>
                     <div class="col-md-4">
                         <strong>Ruta:</strong>
-                        <p>{{ $ingreso->programacionVuelo->ruta->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->ruta->aeropuertoDestino->codigo_IATA }}
-                        <br><small class="text-muted">{{ $ingreso->programacionVuelo->ruta->aeropuertoOrigen->ciudad }} → {{ $ingreso->programacionVuelo->ruta->aeropuertoDestino->ciudad }}</small></p>
+                        <p>{{ $ingreso->programacionVuelo->aeropuertoOrigen->codigo_IATA }} → {{ $ingreso->programacionVuelo->aeropuertoDestino->codigo_IATA }}
+                        <br><small class="text-muted">{{ $ingreso->programacionVuelo->aeropuertoOrigen->ciudad }} → {{ $ingreso->programacionVuelo->aeropuertoDestino->ciudad }}</small></p>
                     </div>
                     <div class="col-md-4">
                         <strong>Aeronave:</strong>

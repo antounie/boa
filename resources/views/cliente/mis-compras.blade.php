@@ -36,20 +36,20 @@
             {{-- Vuelo --}}
             <div class="col-md-2">
                 <div class="text-muted small mb-1">Vuelo</div>
-                <div class="fw-bold">{{ $prog->vuelo->codigo_vuelo }}</div>
-                <div class="text-muted small">{{ $venta->metodo_pago }}</div>
+                <div class="fw-bold">{{ $prog->codigo_vuelo }}</div>
+                <div class="text-muted small">{{ ($venta->transacciones->first()->metodo_pago ?? '-') }}</div>
             </div>
 
             {{-- Ruta --}}
             <div class="col-md-3">
                 <div class="text-muted small mb-1">Ruta</div>
                 <div class="d-flex align-items-center gap-2">
-                    <span class="iata-badge">{{ $prog->ruta->aeropuertoOrigen->codigo_IATA }}</span>
+                    <span class="iata-badge">{{ $prog->aeropuertoOrigen->codigo_IATA }}</span>
                     <i class="bi bi-arrow-right" style="color:var(--accent)"></i>
-                    <span class="iata-badge">{{ $prog->ruta->aeropuertoDestino->codigo_IATA }}</span>
+                    <span class="iata-badge">{{ $prog->aeropuertoDestino->codigo_IATA }}</span>
                 </div>
                 <div class="text-muted small mt-1">
-                    {{ $prog->ruta->aeropuertoOrigen->ciudad }} → {{ $prog->ruta->aeropuertoDestino->ciudad }}
+                    {{ $prog->aeropuertoOrigen->ciudad }} → {{ $prog->aeropuertoDestino->ciudad }}
                 </div>
             </div>
 
@@ -63,8 +63,8 @@
             {{-- Asiento --}}
             <div class="col-md-1">
                 <div class="text-muted small mb-1">Asiento</div>
-                <div class="fw-semibold">{{ $venta->asiento->numero }}</div>
-                <div class="text-muted small" style="font-size:0.72rem">{{ $venta->asiento->tipoClase->nombre }}</div>
+                <div class="fw-semibold">{{ $venta->tickets->first()?->asiento?->numero ?? '-' }}</div>
+                <div class="text-muted small" style="font-size:0.72rem">{{ $venta->tickets->first()?->asiento?->tipoClase?->nombre ?? '-' }}</div>
             </div>
 
             {{-- Monto + Ticket --}}
@@ -73,9 +73,9 @@
                 <div class="fw-bold" style="color:var(--accent);font-size:1.1rem">
                     Bs. {{ number_format($venta->monto_total, 2) }}
                 </div>
-                @if($venta->ticket)
+                @if($venta->tickets->isNotEmpty())
                     <span class="badge mt-1" style="background:var(--btn-primary-bg);font-size:0.7rem">
-                        <i class="bi bi-ticket me-1"></i>{{ $venta->ticket->numero_ticket }}
+                        <i class="bi bi-ticket me-1"></i>{{ $venta->tickets->first()->numero_ticket }}
                     </span>
                 @endif
             </div>

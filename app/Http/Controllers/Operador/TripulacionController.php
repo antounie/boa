@@ -12,11 +12,8 @@ class TripulacionController extends Controller
 {
     public function index(Request $request)
     {
-        $programaciones = ProgramacionVuelo::with(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino'])
+        $programaciones = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino'])
             ->where('estado', 'Programado')
-            ->whereHas('vuelo', function ($q) {
-                $q->whereNull('vuelo_padre_id');
-            })
             ->orderBy('fecha_salida', 'asc')
             ->get();
 
@@ -24,7 +21,7 @@ class TripulacionController extends Controller
         $tripulacion = collect();
 
         if ($request->filled('programacion_id')) {
-            $programacionSeleccionada = ProgramacionVuelo::with(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino', 'aeronave'])
+            $programacionSeleccionada = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino', 'aeronave'])
                 ->find($request->programacion_id);
 
             $tripulacion = Tripulacion::with('empleado')
@@ -38,7 +35,7 @@ class TripulacionController extends Controller
 
     public function create(Request $request)
     {
-        $programacion = ProgramacionVuelo::with(['vuelo', 'ruta.aeropuertoOrigen', 'ruta.aeropuertoDestino'])
+        $programacion = ProgramacionVuelo::with(['aeropuertoOrigen', 'aeropuertoDestino'])
             ->findOrFail($request->programacion_id);
 
         $cargo = $request->cargo ?? 'Piloto';
